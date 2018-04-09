@@ -26,11 +26,15 @@ arr.forEach(function callback(currentValue, index, array) {
 // 继续执行, 遍历arr[2](=4), arr[3](=5), arr[4], 由于arr[4]没有被初始化,所以不会被遍历到
 var arr = [1, 2, 3, 4, 5];
 arr.forEach((t, i) => {
-    console.log(t, i) // 1 0; 2 1; 4 2; 5 3;
+    console.log(t, i)
     if (t === 2) {
         arr.splice(i + 1, 1); // delect next
     }
 })
+// 1 0
+// 2 1
+// 4 2
+// 5 3
 
 // callback里面添加了项目, 不会被遍历到
 var arr = [1, 2, 3, 4, 5];
