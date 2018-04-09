@@ -108,3 +108,5 @@ arr = arr.filter(t => list.indexOf(t) === -1)
 
   };
 ```
+
+放下`O.length >>> 0`的解释[链接](https://www.zhihu.com/question/20693429)
