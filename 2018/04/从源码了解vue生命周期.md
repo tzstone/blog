@@ -1,7 +1,7 @@
 # 从源码了解vue生命周期
 
 本文主要从源码了解`beforeCreate`, `created`, `beforeMount`, `mounted`四个生命周期阶段, 基于vue2.5.16.先贴一个自己画的图:
-![](file:///Users/flow/5031523509723_.pic_hd.jpg)
+![](https://github.com/tzstone/MarkdownPhotos/blob/master/vue%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.jpg){:height="50%" width="50%"}
 
 ## `beforeCreate`和`created`
 
@@ -158,7 +158,7 @@ var Watcher = function Watcher (
 
 贴一下官方生命周期的图:
 
-![](https://cn.vuejs.org/images/lifecycle.png)
+![](https://cn.vuejs.org/images/lifecycle.png){:height="50%" width="50%"}
 
 
 参考资料:  
