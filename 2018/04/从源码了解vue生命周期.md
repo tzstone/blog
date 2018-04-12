@@ -159,10 +159,12 @@ var Watcher = function Watcher (
 ```
 
 ## 总结
-* `beforecreate`: 此时`data`, `props`, `methods`等还没初始化, 无法调用, 也不知道能做啥.
+* `beforecreate`: 此时`data`, `props`, `methods`等还没初始化, 无法调用, 也不知道能做啥.
 * `created`: `data`, `props`, `methods`等初始化完成, 可以进行调用. 网上有些文章说`mounted`里才发请求, 其实没必要, `created`里面就可以了.
 * `beforeMount`: `vm.$el`已赋值, 但是el中的变量未渲染, 使用如`{{msg}}`之类的占位.
 * `mounted`: `vm.$el`已被渲染完后的dom替换
+
+<br />
 
 贴一下官方生命周期的图:  
 <img src="https://cn.vuejs.org/images/lifecycle.png" width=500
