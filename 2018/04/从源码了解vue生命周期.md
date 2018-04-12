@@ -1,6 +1,6 @@
 # 从源码了解vue生命周期
 
-本文主要从源码了解`beforeCreate`, `created`, `beforeMount`, `mounted`四个生命周期阶段, 基于vue2.5.16.先贴一个自己画的图:
+本文主要从源码了解`beforeCreate`, `created`, `beforeMount`, `mounted`四个生命周期阶段, 基于vue2.5.16.先贴一个自己画的图:
 ![](file:///Users/flow/5031523509723_.pic_hd.jpg)
 
 ## `beforeCreate`和`created`
@@ -12,7 +12,7 @@
 
 引用官方的解释:
 
->`beforeCreate`: 在实例初始化之后, 数据观测 (data observer) 和 event/watcher 事件配置之前被调用。
+>`beforeCreate`: 在实例初始化之后, 数据观测 (data observer) 和 event/watcher 事件配置之前被调用。
 
 > `created`: 在实例创建完成后被立即调用。在这一步，实例已完成以下的配置：数据观测 (data observer)，属性和方法的运算，watch/event 事件回调。然而，挂载阶段还没开始，$el 属性目前不可见。
 
@@ -56,7 +56,7 @@ function initState (vm) {
   if (opts.props) { initProps(vm, opts.props); } // 劫持props属性的set和get, 通过代理vm._props将props挂载到vm
   if (opts.methods) { initMethods(vm, opts.methods); } // 把methods的方法挂载带vue实例上, 通过this.methodname可以直接访问
   if (opts.data) {
-    initData(vm); // 劫持data属性的set和get, 通过代理vm._data将data挂载到vm
+    initData(vm); // 劫持data属性的set和get, 通过代理vm._data将data挂载到vm
   } else {
     observe(vm._data = {}, true /* asRootData */);
   }
