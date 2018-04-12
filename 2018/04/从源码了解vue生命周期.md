@@ -100,7 +100,7 @@ function mountComponent (
   el,
   hydrating
 ) {
-  vm.$el = el; // 设置$el, 此时el中的变量未被渲染
+  vm.$el = el; // 设置$el, 此时el中的变量未被渲染
   ...
   callHook(vm, 'beforeMount');
 
@@ -117,7 +117,7 @@ function mountComponent (
   ...
 }
 
-// 独立构建的$mount函数, 先保存之前的$mount方法, 然后进行重写
+// 独立构建的$mount函数, 先保存之前的$mount方法, 然后进行重写
 var mount = Vue.prototype.$mount;
 Vue.prototype.$mount = function (
   el,
