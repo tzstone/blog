@@ -1,7 +1,9 @@
 # 从源码了解vue生命周期
 
-本文主要从源码了解`beforeCreate`, `created`, `beforeMount`, `mounted`四个生命周期阶段, 基于vue2.5.16.先贴一个自己画的图:
-![](https://github.com/tzstone/MarkdownPhotos/blob/master/vue%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.jpg ="50%"x"50%")
+本文主要从源码了解`beforeCreate`, `created`, `beforeMount`, `mounted`四个生命周期阶段, 基于vue2.5.16.
+先贴一个自己画的图:  
+<img src="https://github.com/tzstone/MarkdownPhotos/blob/master/vue%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.jpg" width=500
+ height=1000 align=center />
 
 ## `beforeCreate`和`created`
 
@@ -156,11 +158,11 @@ var Watcher = function Watcher (
 };
 ```
 
-贴一下官方生命周期的图:
-
-![](https://cn.vuejs.org/images/lifecycle.png){:height="50%" width="50%"}
+贴一下官方生命周期的图:  
+<img src="https://cn.vuejs.org/images/lifecycle.png" width=500
+ height=1000 align=center />
 
 
 参考资料:  
-https://cn.vuejs.org/v2/guide/instance.html#%E5%AE%9E%E4%BE%8B%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E9%92%A9%E5%AD%90
-https://segmentfault.com/a/1190000009467029
+[实例生命周期钩子](https://cn.vuejs.org/v2/guide/instance.html#%E5%AE%9E%E4%BE%8B%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E9%92%A9%E5%AD%90)  
+[【Vue源码探究二】从 $mount 讲起，一起探究Vue的渲染机制](https://segmentfault.com/a/1190000009467029)
