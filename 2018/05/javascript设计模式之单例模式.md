@@ -52,7 +52,7 @@ var ProxySingleton = (function() {
 
 惰性单例: 在需要的时候才创建对象实例
 
-通用的惰性单例: 分离创建实例对象的职责和管理单例的职责
+通用的惰性单例: 分离创建实例对象的职责和管理单例的职责
 
 ```javascript
 var getSingle = function(fn) {
