@@ -14,8 +14,8 @@ var str = '<p>打发的</p ><ol><li>打发大师傅</li></ol><ul><li>3&nbsp;<br>
 var reg =  /<li>(.*?)<\/li>/
 
 result = str.match(reg)
-
-![](https://raw.githubusercontent.com/tzstone/MarkdownPhotos/master/match-%E9%9D%9E%E5%85%A8%E5%B1%80.png)
 ```
+结果:
+![](https://raw.githubusercontent.com/tzstone/MarkdownPhotos/master/match-%E9%9D%9E%E5%85%A8%E5%B1%80.png)
 
 ## 全局模式
