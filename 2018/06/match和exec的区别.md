@@ -1,4 +1,4 @@
-str.match()方法和 RegExp.exec()方法同样可以用来返回匹配文本数据, 但也有一些差异, 记录一下.
+str.match()方法和 RegExp.exec()方法同样可以返回匹配文本数据, 但也有一些差异, 记录一下.
 
 ## 非全局模式
 
@@ -62,6 +62,7 @@ result = str.match(reg);
 ```
 
 结果:
+
 ![](https://github.com/tzstone/MarkdownPhotos/blob/master/match-%E5%85%A8%E5%B1%80.png)
 
 可以看到, match 方法同样返回一个数组, 数组里存放匹配到的所有子字符串, 数组没有包含 index 和 input 属性.
@@ -69,14 +70,15 @@ result = str.match(reg);
 ### RegExp.exec()
 
 ```javascript
-var result = [];
+var result = []
 
-var str =
-  "<p>打发的</p ><ol><li>打发大师傅</li></ol><ul><li>3&nbsp;<br></li><li>打发</li></ul>";
+var str = '<p>打发的</p ><ol><li>打发大师傅</li></ol><ul><li>3&nbsp;<br></li><li>打发</li></ul>'
 
-var reg = /<li>(.*?)<\/li>/g;
+var reg =  /<li>(.*?)<\/li>/g
 
-result = reg.exec(str);
+while((result = reg.exec(str)) !== null) {
+ console.log(result)
+}
 ```
 
 结果:
@@ -98,7 +100,8 @@ var reg = /<li>(.*?)<\/li>/g;
 
 result = reg.exec(str);
 
-var tmp = reg.exec("<li>test</li>"); // tmp为null, 因为在上一条语句进行模式匹配时, reg.lastIndex已经修改了, 必须先手动设置为0: reg.lastIndex=0
+var tmp = reg.exec("<li>test</li>"); 
+// tmp为null, 因为在上一条语句进行模式匹配时, reg.lastIndex已经修改了, 必须先手动设置为0: reg.lastIndex=0
 ```
 
 ### 总结
