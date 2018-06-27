@@ -70,14 +70,15 @@ result = str.match(reg);
 ### RegExp.exec()
 
 ```javascript
-var result = []
+var result = [];
 
-var str = '<p>打发的</p ><ol><li>打发大师傅</li></ol><ul><li>3&nbsp;<br></li><li>打发</li></ul>'
+var str =
+  "<p>打发的</p ><ol><li>打发大师傅</li></ol><ul><li>3&nbsp;<br></li><li>打发</li></ul>";
 
-var reg =  /<li>(.*?)<\/li>/g
+var reg = /<li>(.*?)<\/li>/g;
 
-while((result = reg.exec(str)) !== null) {
- console.log(result)
+while ((result = reg.exec(str)) !== null) {
+  console.log(result);
 }
 ```
 
@@ -100,7 +101,7 @@ var reg = /<li>(.*?)<\/li>/g;
 
 result = reg.exec(str);
 
-var tmp = reg.exec("<li>test</li>"); 
+var tmp = reg.exec("<li>test</li>");
 // tmp为null, 因为在上一条语句进行模式匹配时, reg.lastIndex已经修改了, 必须先手动设置为0: reg.lastIndex=0
 ```
 
