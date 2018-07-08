@@ -98,6 +98,15 @@ function genElement(el, state) {
 function genData$2(el, state) {
   var data = "{";
   // ...
+  // 本例中, 模板解析后的ast中button的events属性已经有值
+  /*
+    events: {
+      click:{
+        modifiers: {stop: true},
+        value: 'handleClick'
+      }
+    }
+  */
   // event handlers
   if (el.events) {
     data += genHandlers(el.events, false, state.warn) + ",";
@@ -157,8 +166,10 @@ function genHandler(name, handler) {
     var genModifierCode = "";
     var keys = [];
     for (var key in handler.modifiers) {
+      // 处理修饰符, 将修饰符对应的代码片段添加到handler,
+      // 如.stop就是将$event.stopPropagation();添加到handler
       if (modifierCode[key]) {
-        genModifierCode += modifierCode[key]; // 处理修饰符, 将修饰符对应的代码片段添加到handler, 如.stop就是将$event.stopPropagation();添加到handler
+        genModifierCode += modifierCode[key];
         // left/right
         if (keyCodes[key]) {
           // 键盘处理
@@ -207,7 +218,9 @@ function genHandler(name, handler) {
 
 ```javascript
 function add$1(event, handler, once$$1, capture, passive) {
-  handler = withMacroTask(handler); // 用withMacroTask对handler进行处理, 使得handler执行过程中触发的状态变化都保存到macrotask队列中, 详见https://juejin.im/post/5a1af88f5188254a701ec230
+  // 用withMacroTask对handler进行处理, 使得handler执行过程中触发的状态变化都保存到macrotask队列中,
+  // 详见https://juejin.im/post/5a1af88f5188254a701ec230
+  handler = withMacroTask(handler);
   if (once$$1) {
     handler = createOnceHandler(handler, event, capture);
   }
