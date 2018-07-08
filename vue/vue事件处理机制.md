@@ -63,9 +63,9 @@ var createCompiler = createCompilerCreator(function baseCompile(
 
 function generate(ast, options) {
   var state = new CodegenState(options);
-  var code = ast ? genElement(ast, state) : '_c("div")';
+  var code = ast ? genElement(ast, state) : '_c("div")'; // 得到上述的`code`
   return {
-    render: "with(this){return " + code + "}",
+    render: "with(this){return " + code + "}", // 返回render函数
     staticRenderFns: state.staticRenderFns
   };
 }
