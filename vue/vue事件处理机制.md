@@ -29,16 +29,18 @@
 </script>
 ```
 
-从[从源码了解 vue 生命周期](https://github.com/tzstone/blog/blob/master/vue/%E4%BB%8E%E6%BA%90%E7%A0%81%E4%BA%86%E8%A7%A3vue%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.md)我们知道, 在`created`之前, vue 会通过`initMethods(vm, opts.methods);`把 methods 的方法挂载到 vue 实例上, 而后会调用`vm.$mount(vm.$options.el);`开始编译模板乃至后面挂载`el`. 在上述例子中, 调用过程如下:
+由[从源码了解 vue 生命周期](https://github.com/tzstone/blog/blob/master/vue/%E4%BB%8E%E6%BA%90%E7%A0%81%E4%BA%86%E8%A7%A3vue%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.md)我们知道, 在`created`之前, vue 会通过`initMethods(vm, opts.methods);`把 methods 的方法挂载到 vue 实例上, 而后会调用`vm.$mount(vm.$options.el);`开始编译模板乃至后面挂载`el`. 
+
+在上述例子中, 调用过程如下:
+
 `$mount -> compileToFunctions -> compile -> baseCompile -> var ast = parse(template.trim(), options) -> var code = generate(ast, options) -> genElement -> genData$2 -> genHandler`
+
 其中`ast`是将模板解析后得到的抽象语法树:
-<img src="https://github.com/tzstone/MarkdownPhotos/blob/master/vue%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6-ast.jpeg" width=500
- height=1200 align=center />
+<img src="https://github.com/tzstone/MarkdownPhotos/blob/master/vue%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6-ast.jpeg" align=center />
 可以看到`ast`已经将`button`绑定的 click 事件解析到`events`对象中了.
 
 `genHandler`方法最后会对 handler 进行处理, 处理完之后, 最终得到的渲染代码(`genElement`方法返回的结果)为:
-<img src="https://github.com/tzstone/MarkdownPhotos/blob/master/vue%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6-%E6%B8%B2%E6%9F%93code.jpeg" width=500
- height=1200 align=center />
+<img src="https://github.com/tzstone/MarkdownPhotos/blob/master/vue%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6-%E6%B8%B2%E6%9F%93code.jpeg" align=center />
 
 部分源代码如下:
 
@@ -198,6 +200,7 @@ function genHandler(name, handler) {
 ```
 
 接下来, vue 实例会根据上述得到的`code`进行渲染, 具体调用过程如下:
+
 `vm._update() -> vm.__patch__() -> createElm -> invokeCreateHooks(通过cbs.create) -> updateDOMListeners -> add$1`
 
 其实`add$1`是事件绑定的核心函数
