@@ -29,7 +29,7 @@
 </script>
 ```
 
-由[从源码了解 vue 生命周期](https://github.com/tzstone/blog/blob/master/vue/%E4%BB%8E%E6%BA%90%E7%A0%81%E4%BA%86%E8%A7%A3vue%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.md)我们知道, 在`created`之前, vue 会通过`initMethods(vm, opts.methods);`把 methods 的方法挂载到 vue 实例上, 而后会调用`vm.$mount(vm.$options.el);`开始编译模板乃至后面挂载`el`. 
+由[从源码了解 vue 生命周期](https://github.com/tzstone/blog/blob/master/vue/%E4%BB%8E%E6%BA%90%E7%A0%81%E4%BA%86%E8%A7%A3vue%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.md)我们知道, 在`created`之前, vue 会通过`initMethods(vm, opts.methods);`把 methods 的方法挂载到 vue 实例上, 而后会调用`vm.$mount(vm.$options.el);`开始编译模板乃至后面挂载`el`.
 
 在上述例子中, 调用过程如下:
 
@@ -49,11 +49,11 @@ var createCompiler = createCompilerCreator(function baseCompile(
   template,
   options
 ) {
-  var ast = parse(template.trim(), options);
+  var ast = parse(template.trim(), options); // 解析模板, 得到抽象语法树ast
   if (options.optimize !== false) {
     optimize(ast, options);
   }
-  var code = generate(ast, options);
+  var code = generate(ast, options); // 根据抽象语法树得到渲染函数render
   return {
     ast: ast,
     render: code.render,
