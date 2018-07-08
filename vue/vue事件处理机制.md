@@ -37,9 +37,9 @@
 
 其中`ast`是将模板解析后得到的抽象语法树:
 <img src="https://github.com/tzstone/MarkdownPhotos/blob/master/vue%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6-ast.jpeg" align=center />
-可以看到`ast`已经将`button`绑定的 click 事件解析到`events`对象中了.
+可以看到`ast`已经将`button`绑定的 click 事件解析到`events`对象中了. 由此, 对模板中的绑定事件进行识别已经完成了.
 
-`genHandler`方法最后会对 handler 进行处理, 处理完之后, 最终得到的渲染代码(`genElement`方法返回的结果)为:
+但由于 vue 提供了各种各样的事件/按键修饰符, 所以我们还必须对事件回调函数进行一些特殊处理.这里主要是调用了`genHandler`, 处理完之后, 最终得到的渲染代码`code`(`genElement`方法返回的结果)为:
 <img src="https://github.com/tzstone/MarkdownPhotos/blob/master/vue%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6-%E6%B8%B2%E6%9F%93code.jpeg" align=center />
 
 部分源代码如下:
