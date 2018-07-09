@@ -10,6 +10,8 @@
 
 ## 普通 html 元素上的事件
 
+监听普通 html 元素上的事件, 可以使用事件修饰符. 这里以使用`.stop`修饰符为例. 不使用修饰符的情况只在执行`genHandler`的时候有差异, 后面会讲到.
+
 页面代码如下:
 
 ```html
@@ -40,7 +42,8 @@
 可以看到`ast`已经将`button`绑定的 click 事件解析到`events`对象中了. 由此, 对模板中的绑定事件进行识别已经完成了.
 
 但由于 vue 提供了各种各样的事件/按键修饰符, 所以我们还必须对事件回调函数进行一些特殊处理.这里主要是调用了`genHandler`, 处理完之后, 最终得到的渲染代码`code`(`genElement`方法返回的结果)为:
-<img src="https://github.com/tzstone/MarkdownPhotos/blob/master/vue%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6-%E6%B8%B2%E6%9F%93code.jpeg" align=center />
+
+`_c('div',{attrs:{"id":"app"}},[_c('button',{on:{"click":function($event){$event.stopPropagation();handleClick($event)}}},[_v("click me")])])`
 
 部分源代码如下:
 
@@ -245,6 +248,113 @@ function withMacroTask(fn) {
       return res;
     })
   );
+}
+```
+
+## 组件上的事件
+
+组件上的事件主要有两类: 原生事件和自定义事件.
+在组件根元素上直接监听一个原生事件, 可以使用`.native`修饰符.
+
+页面代码如下:
+
+```html
+<div id="app">
+  <my-component @click.native="nativeclick" @receive="receive">
+  </my-component>
+</div>
+<script src="./vue.js"></script>
+<script>
+  Vue.component('my-component', {
+    name: 'my-component',
+    template: '<div>component. <div @click.stop="send">click me</div></div>',
+    methods: {
+      send() {
+        this.$emit('receive', 'msg from component')
+      }
+    }
+  })
+  new Vue({
+    el: '#app',
+    methods: {
+      nativeclick() {
+        console.log('nativeclick')
+      },
+      receive(msg) {
+        console.log('receive:', msg)
+      }
+    }
+  })
+</script>
+```
+
+组件的编译过程与普通 html 元素一样:
+
+`$mount -> compileToFunctions -> compile -> baseCompile -> var ast = parse(template.trim(), options) -> var code = generate(ast, options) -> genElement -> genData$2 -> genHandler`
+
+得到的`ast`语法树如下:
+
+<img src="https://github.com/tzstone/MarkdownPhotos/blob/master/vue%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6-%E7%BB%84%E4%BB%B6ast.jpg" align=center />
+
+可以看到在组件上监听的原生 click 事件被解析到`nativeEvents`对象中, 而监听组件自定义的`receive`事件则被解析到`events`对象中了.
+
+最后得到的渲染代码`code`为:
+
+`_c('div',{attrs:{"id":"app"}},[_c('my-component',{on:{"receive":receive},nativeOn:{"click":function($event){nativeclick($event)}}})],1)`
+
+接下来会根据`code`进行渲染, 调用过程如下:
+
+`vm._update() -> vm.__patch__() -> createElm`
+
+因为`my-component`是一个组件, 所以创建该组件时会调用`createComponent`方法返回一个 vnode
+
+```javascript
+function createComponent(Ctor, data, context, children, tag) {
+  // ...
+
+  /*
+  data: {
+    nativeOn:{
+      click: function
+    },
+    on: {
+      receive: function
+    }
+  }
+  */
+
+  // 将自定义的事件缓存到listeners, 以此与普通的DOM事件做区分
+  // extract listeners, since these needs to be treated as
+  // child component listeners instead of DOM listeners
+  var listeners = data.on;
+
+  // 将真正的原生事件保存到data.on
+  // replace with listeners with .native modifier
+  // so it gets processed during parent component patch.
+  data.on = data.nativeOn;
+
+  // ...
+
+  // return a placeholder vnode
+  var name = Ctor.options.name || tag;
+  var vnode = new VNode(
+    "vue-component-" + Ctor.cid + (name ? "-" + name : ""),
+    data,
+    undefined,
+    undefined,
+    undefined,
+    context,
+    {
+      Ctor: Ctor,
+      propsData: propsData,
+      listeners: listeners,
+      tag: tag,
+      children: children
+    },
+    asyncFactory
+  );
+
+  return vnode;
 }
 ```
 
