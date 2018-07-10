@@ -304,9 +304,15 @@ function withMacroTask(fn) {
 
 接下来会根据`code`进行渲染, 调用过程如下:
 
-`vm._update() -> vm.__patch__() -> createElm`
+`vm._render() -> createComponent -> vm._update() -> vm.__patch__() -> createElm`
 
-因为`my-component`是一个组件, 所以创建该组件时会调用`createComponent`方法返回一个 vnode
+因为`my-component`是一个组件, 所以创建该组件时会调用`createComponent`方法返回一个 vnode.
+
+在`createComponent`方法中, 组件上的自定义事件`data.on`会被保存到`listeners`, 而其原生事件则被保存到`data.on`(见下面源码).
+
+`data.on`中的事件会在组件渲染的时候像上述的普通 html 元素一样, 通过`invokeCreateHooks(通过cbs.create) -> updateDOMListeners -> add$1`的调用过程, 添加到 DOM 元素对应的监听事件中.
+
+而`listeners`保存的自定义事件, 则是在组件创建完, 进行`initEvents`的时候, 被收集到`vm._events`(发布者)中, 通过`$emit`方法触发调用.
 
 ```javascript
 function createComponent(Ctor, data, context, children, tag) {
@@ -336,26 +342,79 @@ function createComponent(Ctor, data, context, children, tag) {
   // ...
 
   // return a placeholder vnode
-  var name = Ctor.options.name || tag;
-  var vnode = new VNode(
-    "vue-component-" + Ctor.cid + (name ? "-" + name : ""),
-    data,
-    undefined,
-    undefined,
-    undefined,
-    context,
-    {
-      Ctor: Ctor,
-      propsData: propsData,
-      listeners: listeners,
-      tag: tag,
-      children: children
-    },
-    asyncFactory
-  );
-
+  // ...
   return vnode;
 }
+
+// 组件init
+function initEvents(vm) {
+  vm._events = Object.create(null);
+  vm._hasHookEvent = false;
+  // init parent attached events
+  var listeners = vm.$options._parentListeners; // 本例中, listeners={receive: fn}
+  if (listeners) {
+    updateComponentListeners(vm, listeners);
+  }
+}
+
+function updateComponentListeners(vm, listeners, oldListeners) {
+  target = vm;
+  updateListeners(listeners, oldListeners || {}, add, remove$1, vm);
+  target = undefined;
+}
+
+function updateListeners(on, oldOn, add, remove$$1, vm) {
+  // ...
+  add(event.name, cur, event.once, event.capture, event.passive, event.params);
+  // ...
+}
+
+function add(event, fn, once) {
+  // target是VueComponent
+  if (once) {
+    target.$once(event, fn);
+  } else {
+    target.$on(event, fn);
+  }
+}
+
+// $on和$emit就是典型的订阅/发布模式
+Vue.prototype.$on = function(event, fn) {
+  var this$1 = this;
+
+  var vm = this;
+  if (Array.isArray(event)) {
+    for (var i = 0, l = event.length; i < l; i++) {
+      this$1.$on(event[i], fn);
+    }
+  } else {
+    (vm._events[event] || (vm._events[event] = [])).push(fn);
+    // optimize hook:event cost by using a boolean flag marked at registration
+    // instead of a hash lookup
+    if (hookRE.test(event)) {
+      vm._hasHookEvent = true;
+    }
+  }
+  return vm;
+};
+
+Vue.prototype.$emit = function(event) {
+  var vm = this;
+  // ...
+  var cbs = vm._events[event];
+  if (cbs) {
+    cbs = cbs.length > 1 ? toArray(cbs) : cbs;
+    var args = toArray(arguments, 1);
+    for (var i = 0, l = cbs.length; i < l; i++) {
+      try {
+        cbs[i].apply(vm, args);
+      } catch (e) {
+        handleError(e, vm, 'event handler for "' + event + '"');
+      }
+    }
+  }
+  return vm;
+};
 ```
 
 ## 参考资料
