@@ -3,7 +3,7 @@
 在 vue 里面, 由于具体实现的不同, 可以将事件简单地分为两类, 普通 html 元素上的事件和组件上的事件. 但无论是哪种类型的事件, vue 做的事情都可以总结为:
 
 - 编译模板, 识别模板绑定的事件
-- 为 DOM 节点添加绑定事件
+- 为对应的 DOM 节点添加绑定事件(如果需要)
 - 在恰当的时机触发这些事件
 
 下面来看看 vue 是怎么做的:
@@ -254,6 +254,7 @@ function withMacroTask(fn) {
 ## 组件上的事件
 
 组件上的事件主要有两类: 原生事件和自定义事件.
+
 在组件根元素上直接监听一个原生事件, 可以使用`.native`修饰符.
 
 页面代码如下:
@@ -296,7 +297,7 @@ function withMacroTask(fn) {
 
 <img src="https://github.com/tzstone/MarkdownPhotos/blob/master/vue%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6-%E7%BB%84%E4%BB%B6ast.jpg" align=center />
 
-可以看到在组件上监听的原生 click 事件被解析到`nativeEvents`对象中, 而监听组件自定义的`receive`事件则被解析到`events`对象中了.
+可以看到组件监听的原生 click 事件被解析到`nativeEvents`对象中, 而自定义的`receive`事件则被解析到`events`对象中了.
 
 最后得到的渲染代码`code`为:
 
@@ -308,7 +309,7 @@ function withMacroTask(fn) {
 
 因为`my-component`是一个组件, 所以创建该组件时会调用`createComponent`方法返回一个 vnode.
 
-在`createComponent`方法中, 组件上的自定义事件`data.on`会被保存到`listeners`, 而其原生事件则被保存到`data.on`(见下面源码).
+在`createComponent`方法中, 组件的自定义事件`data.on`会被保存到`listeners`, 而原生事件则被保存到`data.on`(见下面源码).
 
 `data.on`中的事件会在组件渲染的时候像上述的普通 html 元素一样, 通过`invokeCreateHooks(通过cbs.create) -> updateDOMListeners -> add$1`的调用过程, 添加到 DOM 元素对应的监听事件中.
 
