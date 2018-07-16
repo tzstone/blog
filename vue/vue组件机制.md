@@ -8,6 +8,7 @@
 ## 组件注册
 
 全局的组件注册是使用了`Vue.component()`方法. 在引入`vue.js`文件时, 会通过`initGlobalAPI -> initAssetRegisters`全局注册`component, directive, filter`方法.
+
 `Vue.component()`方法返回一个 Vue 的子类, 子类以`cid`属性进行区分. 同时该子类会缓存到`Vue.options.components`中.
 
 `Vue.options`截图:
