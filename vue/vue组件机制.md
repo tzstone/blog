@@ -2,7 +2,34 @@
 
 页面代码如下:
 
-```javascript
+```html
+<div id="app">
+  <my-component>
+    i am slot
+  </my-component>
+</div>
+<script src="./vue.js"></script>
+<script>
+  var Child = {
+    template: '<div>child content</div>'
+  }
+  Vue.component('my-component', {
+    name: 'my-component',
+    template: '<div><span>{{msg}}</span><Child></Child><slot></slot></div>',
+    props: ['msg'],
+    components: {
+      Child
+    }
+  })
+  new Vue({
+    el: '#app',
+    data() {
+      return {
+        msg: 'i am a component'
+      }
+    }
+  })
+</script>
 ```
 
 ## 组件注册
@@ -32,7 +59,7 @@ function initAssetRegisters(Vue) {
         definition = this.options._base.extend(definition);
       }
       // ...
-      // 把extend的子类缓存到options.components中
+      // 把extend的子类缓存到Vue.options.components中
       this.options[type + "s"][id] = definition;
       return definition;
     };
@@ -53,7 +80,7 @@ function initExtend(Vue) {
    */
   Vue.extend = function(extendOptions) {
     extendOptions = extendOptions || {};
-    var Super = this;
+    var Super = this; // Vue
     var SuperId = Super.cid;
     var cachedCtors = extendOptions._Ctor || (extendOptions._Ctor = {});
     if (cachedCtors[SuperId]) {
@@ -66,6 +93,7 @@ function initExtend(Vue) {
     }
 
     var Sub = function VueComponent(options) {
+      // Vue.prototype._init, 对实例进行初始化
       this._init(options);
     };
     Sub.prototype = Object.create(Super.prototype);
@@ -77,9 +105,11 @@ function initExtend(Vue) {
     // For props and computed properties, we define the proxy getters on
     // the Vue instances at extension time, on the extended prototype. This
     // avoids Object.defineProperty calls for each instance created.
+    // 将组件的props属性访问代理到Sub.prototype上
     if (Sub.options.props) {
       initProps$1(Sub);
     }
+    // 代理拦截get/set, 依赖收集
     if (Sub.options.computed) {
       initComputed$1(Sub);
     }
@@ -110,6 +140,23 @@ function initExtend(Vue) {
     cachedCtors[SuperId] = Sub;
     return Sub;
   };
+}
+
+function initProps$1(Comp) {
+  var props = Comp.options.props;
+  for (var key in props) {
+    proxy(Comp.prototype, "_props", key);
+  }
+}
+
+function proxy(target, sourceKey, key) {
+  sharedPropertyDefinition.get = function proxyGetter() {
+    return this[sourceKey][key];
+  };
+  sharedPropertyDefinition.set = function proxySetter(val) {
+    this[sourceKey][key] = val;
+  };
+  Object.defineProperty(target, key, sharedPropertyDefinition);
 }
 
 function initMixin(Vue) {
@@ -169,3 +216,15 @@ function initMixin(Vue) {
   };
 }
 ```
+
+## 渲染
+
+由[vue 事件处理机制](https://github.com/tzstone/blog/blob/master/vue/vue%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6.md)我们知道, 模板会经过编译生成`ast`语法树, 再通过`generate(ast, options)`生成渲染的代码.
+
+## 事件
+
+关于组件上的事件, 可查看[vue 事件处理机制](https://github.com/tzstone/blog/blob/master/vue/vue%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6.md)
+
+## 参考资料
+
+- [vue 源码解读－component 机制](https://segmentfault.com/a/1190000009721209)
