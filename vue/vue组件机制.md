@@ -41,8 +41,6 @@
 `Vue.options`截图:
 <img src="https://github.com/tzstone/MarkdownPhotos/blob/master/vue.component.jpeg" align=center />
 
-部分源码:
-
 ```javascript
 // 全局注册vue.component, vue.directive, vue.filter三个方法
 function initAssetRegisters(Vue) {
@@ -219,7 +217,91 @@ function initMixin(Vue) {
 
 ## 渲染
 
-由[vue 事件处理机制](https://github.com/tzstone/blog/blob/master/vue/vue%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6.md)我们知道, 模板会经过编译生成`ast`语法树, 再通过`generate(ast, options)`生成渲染的代码.
+由[vue 事件处理机制](https://github.com/tzstone/blog/blob/master/vue/vue%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6.md)我们知道, 模板会经过编译生成`ast`语法树, 再通过`generate(ast, options)`生成渲染的代码. 在本例中, 渲染`code`为:
+
+code: `_c('div',{attrs:{"id":"app"}},[_c('my-component',[_v("\n i am slot\n ")])],1)`
+
+`_c`就是`initRender`里的`vm._c`.
+
+根据`code`进行渲染的具体过程参见[vue 事件处理机制](https://github.com/tzstone/blog/blob/master/vue/vue%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6.md)
+
+```javascript
+function initRender(vm) {
+  vm._vnode = null; // the root of the child tree
+  vm._staticTrees = null; // v-once cached trees
+  var options = vm.$options;
+  var parentVnode = (vm.$vnode = options._parentVnode); // the placeholder node in parent tree
+  var renderContext = parentVnode && parentVnode.context;
+  vm.$slots = resolveSlots(options._renderChildren, renderContext);
+  vm.$scopedSlots = emptyObject;
+  // bind the createElement fn to this instance
+  // so that we get proper render context inside it.
+  // args order: tag, data, children, normalizationType, alwaysNormalize
+  // internal version is used by render functions compiled from templates
+  vm._c = function(a, b, c, d) {
+    return createElement(vm, a, b, c, d, false);
+  };
+  // ...
+}
+
+// wrapper function for providing a more flexible interface
+// without getting yelled at by flow
+function createElement(
+  context,
+  tag,
+  data,
+  children,
+  normalizationType,
+  alwaysNormalize
+) {
+  if (Array.isArray(data) || isPrimitive(data)) {
+    normalizationType = children;
+    children = data;
+    data = undefined;
+  }
+  if (isTrue(alwaysNormalize)) {
+    normalizationType = ALWAYS_NORMALIZE;
+  }
+  return _createElement(context, tag, data, children, normalizationType);
+}
+
+function _createElement(context, tag, data, children, normalizationType) {
+  // ...
+  var vnode, ns;
+  if (typeof tag === "string") {
+    var Ctor;
+    ns = (context.$vnode && context.$vnode.ns) || config.getTagNamespace(tag);
+
+    // 判断是否是html/svg保留标签
+    if (config.isReservedTag(tag)) {
+      // platform built-in elements
+      vnode = new VNode(
+        config.parsePlatformTagName(tag),
+        data,
+        children,
+        undefined,
+        undefined,
+        context
+      );
+    } else if (
+      isDef((Ctor = resolveAsset(context.$options, "components", tag)))
+    ) {
+      // component
+      // 如果是组件, 调用createComponent返回一个vnode
+      vnode = createComponent(Ctor, data, context, children, tag);
+    } else {
+      // unknown or unlisted namespaced elements
+      // check at runtime because it may get assigned a namespace when its
+      // parent normalizes children
+      vnode = new VNode(tag, data, children, undefined, undefined, context);
+    }
+  } else {
+    // direct component options / constructor
+    vnode = createComponent(tag, data, context, children);
+  }
+  // ...
+}
+```
 
 ## 事件
 

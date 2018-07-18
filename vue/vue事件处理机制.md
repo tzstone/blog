@@ -305,7 +305,7 @@ function withMacroTask(fn) {
 
 接下来会根据`code`进行渲染, 调用过程如下:
 
-`vm._render() -> createComponent -> vm._update() -> vm.__patch__() -> createElm`
+`vm._render() -> createComponent(Ctor, data, context, children, tag) -> vm._update() -> vm.__patch__() -> createElm -> createComponent(vnode, insertedVnodeQueue, parentElm, refElm) -> componentVNodeHooks.init -> new vnode.componentOptions.Ctor(options) === new Sub -> Vue.prototype._init`
 
 因为`my-component`是一个组件, 所以创建该组件时会调用`createComponent`方法返回一个 vnode.
 
