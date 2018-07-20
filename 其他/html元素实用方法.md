@@ -22,10 +22,10 @@ newRow.insertCell().textContent = "Thank you";
   将当前元素滚动到浏览器的可视区域内, 接收一个`Boolean`类型或者`Object`类型的参数.
 
   - `Boolean`
-    - `true`: 默认参数, 元素的顶部将与其可滚动的祖先元素的可视区域的顶部对齐. 等同于 `Object`类型的`{block: "start", inline: "nearest"}`.
-    - `false`: 元素的底部将与其可滚动的祖先元素的可视区域的底部对齐. 等同于 `Object`类型的`{block: "end", inline: "nearest"}`.
+    - `true`: 默认参数, 元素的顶部将与其可滚动的祖先元素的可视区域的顶部对齐. 等同于`Object`类型的`{block: "start", inline: "nearest"}`.
+    - `false`: 元素的底部将与其可滚动的祖先元素的可视区域的底部对齐. 等同于`Object`类型的`{block: "end", inline: "nearest"}`.
   - `Object`
-    - `behavior`: 定义过渡动画. `auto`, `instant`, `smooth`之一. 默认是`auto`. `auto`, `instant`都是立即滚动, `smooth`是平滑滚动( 有兼容性问题, 部分浏览器不支持).
+    - `behavior`: 定义过渡动画. `auto`, `instant`, `smooth`之一. 默认是`auto`. `auto`, `instant`都是立即滚动, `smooth`是平滑滚动(有兼容性问题, 部分浏览器不支持).
     - `block`: 定义元素在可滚动的祖先元素的可视区域内的垂直对齐方式. `start`, `center`, `end`, `nearest`之一. 默认是`center`.
     - `inline`: 定义元素在可滚动的祖先元素的可视区域内的水平对齐方式. `start`, `center`, `end`, `nearest`之一. 默认是`center`.
 
