@@ -1,6 +1,6 @@
 # html 元素实用方法合集
 
-- table 元素
+1. table 元素
 
   原生的 table 元素有很便捷的创建方法:
 
@@ -17,7 +17,7 @@
   newRow.insertCell().textContent = "Thank you";
   ```
 
-- el.scrollIntoView(Boolean | Object)
+2. el.scrollIntoView(Boolean | Object)
 
   将当前元素滚动到浏览器的可视区域内, 接收一个`Boolean`类型或者`Object`类型的参数.
 
@@ -29,7 +29,7 @@
     - `block`: 定义元素在可滚动的祖先元素的可视区域内的垂直对齐方式. `start`, `center`, `end`, `nearest`之一. 默认是`center`.
     - `inline`: 定义元素在可滚动的祖先元素的可视区域内的水平对齐方式. `start`, `center`, `end`, `nearest`之一. 默认是`center`.
 
-- el.scrollIntoViewIfNeeded(Boolean)
+3. el.scrollIntoViewIfNeeded(Boolean)
 
   如果当前元素`完全处于`浏览器可视区域内, 则不会滚动, 否则滚动到浏览器可视区域的相应位置. 该方法是`scrollIntoView`的变体, 接收一个`Boolean`类型参数, `有兼容性问题`.
 
@@ -39,7 +39,7 @@
 
   注意: 当元素不完全处于可视区域(某一部分被遮挡), 无论参数是`true`还是`false`, 调用`scrollIntoViewIfNeeded`都会发生滚动, 对齐的方式是`nearest`.
 
-- el.hidden
+4. el.hidden
 
   可用来读取或设置元素隐藏, 类似`el.style.display='none'`.
 
@@ -49,13 +49,13 @@
 
   注意: 如果设置了某个元素的`display`为`none`, 其`hidden`属性仍然为`false`.
 
-- el.closest(selectors)
+5. el.closest(selectors)
 
   返回当前元素匹配到的最近的祖先元素, 如果没匹配到, 则返回 null.
 
   `el.closest('.box')`
 
-- el.getBoundingClientRect()
+6. el.getBoundingClientRect()
 
   返回当前元素的大小及其相对视窗的位置: `left`, `top`, `right`, `bottom`, `x`, `y`, `width`, `height`.
 
@@ -67,7 +67,7 @@
 
   <img src="https://github.com/tzstone/MarkdownPhotos/blob/master/getBoundingClientRect-scroll.gif" height=250 align=center />
 
-- el.matches(selectorString)
+7. el.matches(selectorString)
 
   returns `true` if the element would be selected by the specified selector string; otherwise, returns `false`.
 
@@ -81,7 +81,7 @@
   </script>
   ```
 
-- el.insertAdjacentElement(position, element)
+8. el.insertAdjacentElement(position, element)
 
   inserts a given element node at a given position relative to the element it is invoked upon
 
@@ -112,7 +112,7 @@
   <span>afterend</span>
   ```
 
-- node.contains(otherNode)
+9. node.contains(otherNode)
 
   returns a Boolean value indicating whether a node is a descendant of a given node
 
@@ -126,7 +126,7 @@
   };
   ```
 
-- dialog 元素
+10. dialog 元素
 
   `dialogEl.show()`, `dialogEl.hide()`方法可以控制 dialog 元素的显示/隐藏.
 
@@ -137,7 +137,7 @@
   - 在`dialog`元素里内置`form`元素, 将其`method`设置为`dialog`, 当表单`submit`的时候, `dialog`会自动关闭.
   - 调用`show`方法时, `dialog`元素是按普通文档流的方式排列; 调用`showModal`方法时, `dialog`元素是相对视图垂直, 水平居中(类似`fixed`定位)
 
-- form 表单
+11. form 表单
 
   - `reset`: 重置表单
   - `reportValidity`: 表单校验
