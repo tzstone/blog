@@ -52,6 +52,8 @@
 - el.closest(selectors)
 
   返回当前元素最近的匹配到的祖先元素, 如果没匹配到, 则返回 null.
+  
+  `el.closest('.box')`
 
 - el.getBoundingClientRect()
 
@@ -61,9 +63,9 @@
 
   注意: 该方法会引起重绘
 
-  <img src="https://github.com/tzstone/MarkdownPhotos/blob/master/getBoundingClientRect.gif" align=center />
+  <img src="https://github.com/tzstone/MarkdownPhotos/blob/master/getBoundingClientRect.gif" height=200 align=center />
 
-  <img src="https://github.com/tzstone/MarkdownPhotos/blob/master/getBoundingClientRect-scroll.gif" align=center />
+  <img src="https://github.com/tzstone/MarkdownPhotos/blob/master/getBoundingClientRect-scroll.gif" height=200 align=center />
 
 ## 参考资料
 
