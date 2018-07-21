@@ -1,6 +1,6 @@
 # html 元素实用方法合集
 
-- table
+- table 元素
 
   原生的 table 元素有很便捷的创建方法:
 
@@ -51,8 +51,8 @@
 
 - el.closest(selectors)
 
-  返回当前元素最近的匹配到的祖先元素, 如果没匹配到, 则返回 null.
-  
+  返回当前元素匹配到的最近的祖先元素, 如果没匹配到, 则返回 null.
+
   `el.closest('.box')`
 
 - el.getBoundingClientRect()
@@ -66,6 +66,81 @@
   <img src="https://github.com/tzstone/MarkdownPhotos/blob/master/getBoundingClientRect.gif" height=250 align=center />
 
   <img src="https://github.com/tzstone/MarkdownPhotos/blob/master/getBoundingClientRect-scroll.gif" height=250 align=center />
+
+- el.matches(selectorString)
+
+  returns `true` if the element would be selected by the specified selector string; otherwise, returns `false`.
+
+  ```html
+  <div class="wrap">
+    <div class="box"></div>
+  </div>
+  <script>
+    document.querySelector('.box').matches('.wrap .box') // true
+    document.querySelector('.box').matches('.box') // true
+  </script>
+  ```
+
+- el.insertAdjacentElement(position, element)
+
+  inserts a given element node at a given position relative to the element it is invoked upon
+
+  - `position`
+    - `beforebegin`: Before the `el` itself.
+    - `afterbegin`: Just inside the `el`, before its first child.
+    - `beforeend`: Just inside the `el`, after its last child.
+    - `afterend`: After the `el` itself.
+  - `element`: The element to be inserted into the tree
+
+  ```html
+  <!-- before -->
+  <div class="box">
+    <span>first child</span>
+    <span>secend child</span>
+    <span>last child</span>
+  </div>
+
+  <!-- after box.insertAdjacentElement insert-->
+  <span>beforebegin</span>
+  <div class="box">
+    <span>afterbegin</span>
+    <span>first child</span>
+    <span>secend child</span>
+    <span>last child</span>
+    <span>beforeend</span>
+  </div>
+  <span>afterend</span>
+  ```
+
+- node.contains(otherNode)
+
+  returns a Boolean value indicating whether a node is a descendant of a given node
+
+  element-ui 里 clickoutside 的自定义指令有类似用法:
+
+  ```javascript
+  const handler = function(e) {
+    if (!el.contains(e.target)) {
+      // ...
+    }
+  };
+  ```
+
+- dialog 元素
+
+  `dialogEl.show()`, `dialogEl.hide()`方法可以控制 dialog 元素的显示/隐藏.
+
+  `dialogEl.showModal()`能够将`dailog`元素显示在页面的顶层, 居中对齐, 无需指定`z-index`或添加灰色背景色(浏览器会默认添加背景色), 也不需要监听 esc 按键以关闭此窗口.
+
+  注意:
+
+  - 在`dialog`元素里内置`form`元素, 将其`method`设置为`dialog`, 当表单`submit`的时候, `dialog`会自动关闭.
+  - 调用`show`方法时, `dialog`元素是按普通文档流的方式排列; 调用`showModal`方法时, `dialog`元素是相对视图垂直, 水平居中(类似`fixed`定位)
+
+- form 表单
+
+  - `reset`: 重置表单
+  - `reportValidity`: 表单校验
 
 ## 参考资料
 
