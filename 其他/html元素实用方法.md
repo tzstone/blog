@@ -63,9 +63,9 @@
 
   注意: 该方法会引起重绘
 
-  <img src="https://github.com/tzstone/MarkdownPhotos/blob/master/getBoundingClientRect.gif" height=200 align=center />
+  <img src="https://github.com/tzstone/MarkdownPhotos/blob/master/getBoundingClientRect.gif" height=250 align=center />
 
-  <img src="https://github.com/tzstone/MarkdownPhotos/blob/master/getBoundingClientRect-scroll.gif" height=200 align=center />
+  <img src="https://github.com/tzstone/MarkdownPhotos/blob/master/getBoundingClientRect-scroll.gif" height=250 align=center />
 
 ## 参考资料
 
