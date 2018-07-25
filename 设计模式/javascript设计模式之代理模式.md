@@ -119,6 +119,31 @@ miniConsole = {
 };
 ```
 
+## 缓存代理
+
+缓存代理可以为一些开销大的运算结果提供暂时的存储, 在下次运算时, 如果传递进来的参数跟之前一致, 则可以  直接返回前面存储的运算结果.
+
+```javascript
+var mult = function() {
+  var a = 1;
+  for (var i = 0, l = arguments.length; i < l; i++) {
+    a = a * arguments[i];
+  }
+  return a;
+};
+
+var proxyMult = (function() {
+  var cache = {};
+  return function() {
+    var args = Array.prototype.join.call(arguments, ",");
+    if (args in cache) {
+      return cache[args];
+    }
+    return (cache[args] = mult.apply(this, arguments));
+  };
+})();
+```
+
 ## 代理的意义
 
 添加代理对象使得接口行为符合单一职责原则
