@@ -24,7 +24,7 @@ XSS 全称跨站脚本(Cross Site Scripting), 为了不和层叠样式表(Cascad
 
   反射型的一种, 是指通过恶意脚本修改页面的 DOM 结构.
 
-  比如有某个链接如下, 获取 url 中的 name 显示在页面中
+  比如有某个链接如下, 通过获取 url 中的 name 显示在页面中
 
   `http://site/index.html?name=xxx`
 
@@ -38,7 +38,7 @@ XSS 全称跨站脚本(Cross Site Scripting), 为了不和层叠样式表(Cascad
   };
   ```
 
-  把`name`修改为`<a href='http://www.google.com'>name</a>`, 当用户点击`name` 时就会跳转谷歌.
+  把`name`修改为`<a href='http://www.google.com'>name</a>`, 当用户点击`name`时就会跳转到谷歌.
 
 ## 防范
 
