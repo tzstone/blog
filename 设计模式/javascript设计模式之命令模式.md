@@ -2,4 +2,33 @@
 
 命令模式中的命令(command)指的是一个执行某些特定事情的指令. 命令模式最常见的应用场景是: 有时候需要向某些对象发送请求, 但是并不知道请求的接受者是谁, 也不知道被请求的操作是什么. 此时希望用一种松耦合的方式来设计程序, 使得请求发送者和请求接收者能够消除彼此之间的耦合关系.
 
+命令模式的由来, 其实是回调函数的一个面向对象的替代品.
+
+## 实现
+
+```javascript
+var MenuBar = {
+  refresh: function() {
+    console.log("刷新页面");
+  }
+};
+
+var RefreshMenuBarCommand = function(receiver) {
+  return {
+    execute: function() {
+      receiver.refresh();
+    }
+  };
+};
+
+var setCommand = function(button, command) {
+  button.click = function() {
+    command.execute();
+  };
+};
+
+var refreshMenuBarCommand = RefreshMenuBarCommand(MenuBar);
+setCommand(button1, refreshMenuBarCommand);
+```
+
 摘自[javascript 设计模式与开发实践](https://book.douban.com/subject/26382780/)
