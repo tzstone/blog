@@ -31,4 +31,56 @@ var refreshMenuBarCommand = RefreshMenuBarCommand(MenuBar);
 setCommand(button1, refreshMenuBarCommand);
 ```
 
+## 撤销和重做
+
+保存一个执行的命令的历史列表, 对于可逆命令, 可以通过倒序循环依次执行这些命令的 undo 操作进行命令撤销. 对于不可逆命令, 可以清除结果, 通过重新执行命令进行重做.
+
+```javascript
+var Ryu = {
+  attack: function() {
+    console.log("攻击");
+  },
+  defense: function() {
+    console.log("防御");
+  },
+  jump: function() {
+    console.log("跳跃");
+  },
+  crouch: function() {
+    console.log("蹲下");
+  }
+};
+
+var makeCommand = function(receiver, state) {
+  return function() {
+    receiver[state]();
+  };
+};
+
+var commands = {
+  "119": "jump", // W
+  "115": "crouch", // S
+  "97": "defense", // A
+  "100": "attack" // D
+};
+
+var commandStack = []; // 保存命令的堆栈
+document.onkeypress = function(ev) {
+  var keyCode = ev.keyCode,
+    command = makeCommand(Ryu, commands[keyCode]);
+  if (command) {
+    command();
+    commandStack.push(command); // 保存刚刚执行过的命令
+  }
+};
+
+document.getElementById("replay").onclick = function() {
+  var command;
+  while ((command = commandStack.shift())) {
+    // 从堆栈里依次取出命令并执行
+    command();
+  }
+};
+```
+
 摘自[javascript 设计模式与开发实践](https://book.douban.com/subject/26382780/)
