@@ -4,11 +4,11 @@
 
 before:
 
-<img src="https://github.com/tzstone/MarkdownPhotos/blob/master/%E4%B8%AD%E4%BB%8B%E8%80%85%E6%A8%A1%E5%BC%8F-before.jpeg" align=center />
+<img src="https://github.com/tzstone/MarkdownPhotos/blob/master/%E4%B8%AD%E4%BB%8B%E8%80%85%E6%A8%A1%E5%BC%8F-before.jpeg" align=center width=500/>
 
 after:
 
-<img src="https://github.com/tzstone/MarkdownPhotos/blob/master/%E4%B8%AD%E4%BB%8B%E8%80%85%E6%A8%A1%E5%BC%8F-after.jpeg" align=center />
+<img src="https://github.com/tzstone/MarkdownPhotos/blob/master/%E4%B8%AD%E4%BB%8B%E8%80%85%E6%A8%A1%E5%BC%8F-after.jpeg" align=center width=500/>
 
 ```javascript
 function Player(name, teamColor) {
