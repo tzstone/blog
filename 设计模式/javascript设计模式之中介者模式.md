@@ -10,6 +10,10 @@ after:
 
 <img src="https://github.com/tzstone/MarkdownPhotos/blob/master/%E4%B8%AD%E4%BB%8B%E8%80%85%E6%A8%A1%E5%BC%8F-after.jpeg" align=center width=500/>
 
+## 缺点
+
+系统中会新增一个中介者对象, 因为对象之间交互的复杂性, 转移成了中介者对象的复杂性, 使得中介者对象经常是巨大的. 中介者对象自身往往就是一个难以维护的对象.
+
 ```javascript
 function Player(name, teamColor) {
   this.name = name;
