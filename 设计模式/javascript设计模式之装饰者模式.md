@@ -36,4 +36,76 @@ plane.fire();
 
 因为装饰者对象和它所装饰的对象拥有一致的接口, 所以它们对使用该对象的用户来说是透明的, 被装饰的对象也并不需要了解它曾经被装饰过, 这种透明性使得我们可以递归地嵌套任意多个装饰者对象.
 
+## 用 AOP 装饰函数
+
+```js
+// 不污染原型的方法
+var before = function(fn, beforefn) {
+  return function() {
+    beforefn.apply(this, arguments);
+    return fn.apply(this, arguments);
+  };
+};
+
+// 修改原型
+Function.prototype.before = function(beforefn) {
+  var _self = this; // 保存原函数的引用
+  return function() {
+    // beforefn和原函数_self共用arguments,
+    // 可以在beforefn里改变arguments来动态给_self添加参数
+    if (beforefn.apply(this, arguments) === false) {
+      // beforefn返回false时直接return
+      return;
+    }
+    return _self.apply(this, arguments); // 保证this不会被劫持
+  };
+};
+Function.prototype.after = function(afterfn) {
+  var _self = this;
+  return function() {
+    var ret = _self.apply(this, arguments);
+    afterfn.apply(this, arguments);
+    return ret;
+  };
+};
+
+// 动态给ajax请求添加token参数
+var getToken = function() {
+  return "Token";
+};
+var ajax = function(type, url, param) {
+  console.log(param);
+};
+ajax = ajax.before(function(type, url, param) {
+  param.token = getToken();
+});
+ajax("get", "http://xxx", { name: "sven" });
+
+// 表单验证
+var validate = function() {
+  if (username.value === "") {
+    alert("用户名不能为空");
+    return false;
+  }
+  if (password.value === "") {
+    alert("密码不能为空");
+    return false;
+  }
+};
+
+var formSubmit = function() {
+  var param = {
+    username: username.value,
+    password: password.value
+  };
+  ajax("http://xxx", param);
+};
+
+formSubmit = formSubmit.before(validate);
+
+submitBtn.onclick = function() {
+  formSubmit();
+};
+```
+
 摘自[javascript 设计模式与开发实践](https://book.douban.com/subject/26382780/)
