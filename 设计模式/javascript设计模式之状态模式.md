@@ -54,7 +54,7 @@ var light = new Light();
 light.init();
 ```
 
-复杂切换条件的状态模式
+## 复杂切换条件的状态模式
 
 ```js
 // 文件上传插件
@@ -83,6 +83,7 @@ var plugin = (function() {
   return plugin;
 })();
 
+// 上下文 Context
 var Upload = function(fileName) {
   this.plugin = plugin;
   this.fileName = fileName;
@@ -154,7 +155,7 @@ Upload.prototype.del = function() {
   this.dom.parentNode.removeChild(this.dom);
 };
 
-// 状态工厂
+// 状态类工厂
 var StateFactory = (function() {
   // 抽象父类, 避免子类没有定义clickHandler方法
   var State = function() {};
