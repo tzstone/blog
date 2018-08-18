@@ -4,6 +4,22 @@
 
 把事物的每个状态都封装成单独的类, 跟此种状态有关的行为都被封装在这个类的内部, 触发状态转移时, 把请求委托给当前的状态对象.
 
+## 优缺点
+
+### 优点
+
+-  定义了状态与行为之间的关系, 并将它们封装在一个类里. 通过增加新的状态类, 很容易添加新的状态和转移
+- 避免 Context 无限膨胀, 状态切换的逻辑被分布在状态类中, 也去掉了 Context 中原本过多的条件分支
+- 用对象代替字符串来记录当前状态, 使得状态的切换更加一目了然
+- Context 中的请求动作和状态类中封装的行为可以非常容易地独立变化而互不影响
+
+### 缺点
+
+- 系统中会定义许多状态类, 增加不少对象
+- 逻辑分散在状态类中, 无法在一个地方就看出整个状态机的逻辑
+
+## 实现
+
 ```js
 // 状态类, 封装状态相关的行为
 var OffLightState = function(light) {
@@ -54,7 +70,104 @@ var light = new Light();
 light.init();
 ```
 
-## 复杂切换条件的状态模式
+### javascript 版本的状态机
+
+- 不让 `Context` 持有状态对象, 而是用 `call` 方法进行请求委托
+
+```js
+var Light = function() {
+  this.currState = FSM.off; // 设置当前状态
+  this.button = null;
+};
+Light.prototype.init = function() {
+  var button = document.createElement("button"),
+    self = this;
+
+  button.innerHTML = "已关灯";
+
+  this.button = document.body.appendChild(button);
+
+  this.button.onclick = function() {
+    self.currState.buttonWasPressed.call(self); // 把请求委托给FSM状态机
+  };
+};
+
+// 状态机
+var FSM = {
+  off: {
+    buttonWasPressed: function() {
+      console.log("关灯");
+      this.button.innerHTML = "下一次点击是开灯";
+      this.currState = FSM.on;
+    }
+  },
+  on: {
+    buttonWasPressed: function() {
+      console.log("开灯");
+      this.button.innerHTML = "下一次点击是关灯";
+      this.currState = FSM.off;
+    }
+  }
+};
+
+var light = new Light();
+light.init();
+```
+
+- 另一种写法, 通过`delegate`函数进行委托
+
+```js
+var delegate = function(client, delegation) {
+  return {
+    buttonWasPressed: function() {
+      // 把客户请求委托给delegation对象
+      return delegation.buttonWasPressed.apply(client, arguments);
+    }
+  };
+};
+
+// 状态机
+var FSM = {
+  off: {
+    buttonWasPressed: function() {
+      console.log("关灯");
+      this.button.innerHTML = "下一次点击是开灯";
+      this.currState = this.onState;
+    }
+  },
+  on: {
+    buttonWasPressed: function() {
+      console.log("开灯");
+      this.button.innerHTML = "下一次点击是关灯";
+      this.currState = this.offState;
+    }
+  }
+};
+
+var Light = function() {
+  this.offState = delegate(this, FSM.off);
+  this.onState = delegate(this, FSM.on);
+  this.currState = this.offState; // 设置当前状态
+  this.button = null;
+};
+Light.prototype.init = function() {
+  var button = document.createElement("button"),
+    self = this;
+
+  button.innerHTML = "已关灯";
+
+  this.button = document.body.appendChild(button);
+
+  this.button.onclick = function() {
+    self.currState.buttonWasPressed(); // 把请求委托给FSM状态机
+  };
+};
+
+var light = new Light();
+light.init();
+```
+
+### 复杂切换条件的状态模式
 
 ```js
 // 文件上传插件
@@ -233,6 +346,157 @@ setTimeout(() => {
 setTimeout(() => {
   window.external.upload("done");
 }, 5000);
+```
+
+- 改写成 javascript 轻便版本
+
+```js
+// 文件上传插件
+var plugin = (function() {
+  var plugin = document.createElement("embed");
+  plugin.style.display = "none";
+  plugin.type = "application/txftn-webkit";
+
+  plugin.sign = function() {
+    console.log("开始文件扫描");
+  };
+  plugin.pause = function() {
+    console.log("暂停文件上传");
+  };
+  plugin.uploading = function() {
+    console.log("开始文件上传");
+  };
+  plugin.del = function() {
+    console.log("删除文件上传");
+  };
+  plugin.done = function() {
+    console.log("文件上传成功");
+  };
+
+  document.body.appendChild(plugin);
+  return plugin;
+})();
+
+// 上下文 Context
+var Upload = function(fileName) {
+  this.plugin = plugin;
+  this.fileName = fileName;
+  this.button1 = null;
+  this.button2 = null;
+  this.currState = FSM.sign; // 设置当前状态
+};
+Upload.prototype.init = function() {
+  this.dom = document.createElement("div");
+  this.dom.innerHTML = `
+    <span>文件名称: ${this.fileName}</span>
+    <button data-action="button1">扫描中</button>
+    <button data-action="button2">删除</button>`;
+
+  document.body.appendChild(this.dom);
+
+  this.button1 = this.dom.querySelector('[data-action="button1"]');
+  this.button2 = this.dom.querySelector('[data-action="button2"]');
+  this.bindEvent();
+};
+Upload.prototype.bindEvent = function() {
+  var self = this;
+  // 通过call方法委托请求
+  this.button1.onclick = function() {
+    self.currState.clickHandler1.call(self);
+  };
+  this.button2.onclick = function() {
+    self.currState.clickHandler2.call(self);
+  };
+};
+/*
+  状态对应的逻辑行为放在Upload类中, 而不是状态类中,
+  这是因为状态类中状态的切换不是单一的, 一个状态类可以切换到多个其他状态,
+  把状态对应的逻辑行为写在Upload类中有利于代码复用和维护
+*/
+Upload.prototype.sign = function() {
+  this.plugin.sign();
+  this.currState = FSM.sign;
+};
+Upload.prototype.uploading = function() {
+  this.button1.innerHTML = "正在上传, 点击暂停";
+  this.plugin.uploading();
+  this.currState = FSM.uploading;
+};
+Upload.prototype.pause = function() {
+  this.button1.innerHTML = "已暂停, 点击继续上传";
+  this.plugin.pause();
+  this.currState = FSM.pause;
+};
+Upload.prototype.done = function() {
+  this.button1.innerHTML = "上传完成";
+  this.plugin.done();
+  this.currState = FSM.done;
+};
+Upload.prototype.error = function() {
+  this.button1.innerHTML = "上传失败";
+  this.currState = FSM.error;
+};
+Upload.prototype.del = function() {
+  this.plugin.del();
+  this.dom.parentNode.removeChild(this.dom);
+};
+
+var FSM = {
+  sign: {
+    clickHandler1: function() {
+      console.log("扫描中, 点击无效...");
+    },
+    clickHandler2: function() {
+      console.log("文件正在上传中, 不能删除");
+    }
+  },
+  uploading: {
+    clickHandler1: function() {
+      this.pause();
+    },
+    clickHandler2: function() {
+      console.log("文件正在上传中, 不能删除");
+    }
+  },
+  pause: {
+    clickHandler1: function() {
+      this.uploading();
+    },
+    clickHandler2: function() {
+      this.del();
+    }
+  },
+  done: {
+    clickHandler1: function() {
+      console.log("文件已上传完成, 点击无效");
+    },
+    clickHandler2: function() {
+      this.del();
+    }
+  },
+  error: {
+    clickHandler1: function() {
+      console.log("文件上传失败, 点击无效");
+    },
+    clickHandler2: function() {
+      this.del();
+    }
+  }
+};
+
+var uploadObj = new Upload("javascript");
+uploadObj.init();
+
+window.external.upload = function(state) {
+  uploadObj[state]();
+};
+window.external.upload("sign");
+setTimeout(() => {
+  window.external.upload("uploading");
+}, 3000);
+setTimeout(() => {
+  window.external.upload("done");
+}, 10000);
 ```
 
 摘自[javascript 设计模式与开发实践](https://book.douban.com/subject/26382780/)
