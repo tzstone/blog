@@ -88,6 +88,7 @@ eval("[" + foo + "]"); // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 // 方法四
 JSON.parse(`[${JSON.stringify(foo).replace(/\[|]/g, "")}]`); // [1, 2, 3, "4", 5, "6", 7, 8, 9, 10]
+
 // 方法五
 const flatten = ary =>
   ary.reduce((a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), []);
