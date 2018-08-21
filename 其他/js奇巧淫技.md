@@ -128,7 +128,7 @@ undefined = 1;
 
 - 匿名函数自执行写法
 
-```js
+```html
 (function() {}());
 (function() {})();
 [function() {}()];
@@ -149,6 +149,94 @@ var f = function() {}();
 1, function() {}();
 1 ^ function() {}();
 1 > function() {}();
+```
+
+- 两个整数交换数值
+
+```js
+var a = 20,
+  b = 30;
+
+a ^= b;
+b ^= a;
+a ^= b;
+a; // 30
+b; // 20
+```
+
+- 数字字符转数字
+
+```js
+var a = "1";
++a; // 1
+```
+
+- 最短的代码实现数组去重
+
+```js
+[...new Set([1, "1", 2, 1, 1, 3])]; // [1, "1", 2, 3]
+```
+
+- 用最短的代码实现一个长度为 m(6)且值都 n(8)的数组
+
+```js
+Array(6).fill(8); // [8, 8, 8, 8, 8, 8]
+```
+
+- 将 argruments 对象转换成数组
+
+```js
+var argArray = Array.prototype.slice.call(arguments);
+
+// ES6：
+var argArray = Array.from(arguments);
+
+// or
+var argArray = [...arguments];
+```
+
+- 使用 ~x.indexOf('y')来简化 x.indexOf('y')>-1
+
+```js
+var str = "hello world";
+if (str.indexOf("lo") > -1) {
+  // ...
+}
+
+if (~str.indexOf("lo")) {
+  // ...
+}
+```
+
+- 判断对象的实例
+
+```js
+// 方法一: ES3
+function Person(name, age) {
+  if (!(this instanceof Person)) {
+    return new Person(name, age);
+  }
+
+  this.name = name;
+  this.age = age;
+}
+
+// 方法二: ES5
+function Person(name, age) {
+  var self = this instanceof Person ? this : Object.create(Person.prototype);
+  self.name = name;
+  self.age = age;
+  return self;
+}
+
+// 方法三：ES6
+function Person(name, age) {
+  if (!new.target) {
+    throw "Peron must called with new";
+  }
+  this.name = name;
+  this.age = age;
+}
 ```
 
 ## 参考资料
