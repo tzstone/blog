@@ -11,3 +11,146 @@ var number = "10.6";
 // 方法二, es6支持
 Number.isInteger(number - 0);
 ```
+
+- 浮点数取整
+
+```js
+const x = 123.4545;
+x >> 0; // 123
+~~x; // 123
+x | 0; // 123
+Math.floor(x); // 123
+```
+
+注意：前三种方法只适用于 32 个位整数，对于负数的处理上和 Math.floor 是不同的。
+
+```js
+Math.floor(-12.53); // -13
+-12.53 | 0; // -12
+```
+
+- 16 进制颜色代码生成
+
+```js
+(function() {
+  return (
+    "#" + ("00000" + ((Math.random() * 0x1000000) << 0).toString(16)).slice(-6)
+  );
+})();
+```
+
+- url 查询参数转 json 格式
+
+```js
+var query = function() {
+  var o = {},
+    search = arguments[0] || window.location.search;
+  search.replace(/([^?=&]+)=([^&]*)/g, function(m, key, value) {
+    o[key] = decodeURIComponent(value);
+  });
+  return o;
+};
+
+query("?key1=value1&key2=value2");
+```
+
+- 获取 URL 参数
+
+```js
+function getQueryString(key) {
+  var reg = new RegExp("(^|&)" + key + "=([^&]*)(&|$)");
+  var r = window.location.search.substr(1).match(reg);
+
+  if (r != null) {
+    return unescape(r[2]);
+  }
+
+  return null;
+}
+```
+
+- n 维数组展开成一维数组
+
+```js
+var foo = [1, [2, 3], ["4", 5, ["6", 7, [8]]], [9], 10];
+
+// 方法一
+// 限制：数组项不能出现`,`，同时数组项全部变成了字符数字
+foo.toString().split(","); // ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+
+// 方法二
+// 转换后数组项全部变成数字了
+eval("[" + foo + "]"); // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+// 方法三，使用ES6展开操作符
+// 写法太过麻烦，太过死板
+[1, ...[2, 3], ...["4", 5, ...["6", 7, ...[8]]], ...[9], 10]; // [1, 2, 3, "4", 5, "6", 7, 8, 9, 10]
+
+// 方法四
+JSON.parse(`[${JSON.stringify(foo).replace(/\[|]/g, "")}]`); // [1, 2, 3, "4", 5, "6", 7, 8, 9, 10]
+// 方法五
+const flatten = ary =>
+  ary.reduce((a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), []);
+flatten(foo); // [1, 2, 3, "4", 5, "6", 7, 8, 9, 10]
+
+// 方法六
+function flatten(a) {
+  return Array.isArray(a) ? [].concat(...a.map(flatten)) : a;
+}
+flatten(foo); // [1, 2, 3, "4", 5, "6", 7, 8, 9, 10]
+```
+
+- 测试质数
+
+```js
+function isPrime(n) {
+  return !/^.?$|^(..+?)\1+$/.test("1".repeat(n));
+}
+```
+
+- 统计字符串中相同字符出现的次数
+
+```js
+var arr = "abcdaabc";
+
+var info = arr.split("").reduce((p, k) => (p[k]++ || (p[k] = 1), p), {});
+
+console.log(info); //{ a: 3, b: 2, c: 2, d: 1 }
+```
+
+- 使用 void0 来解决 undefined 被污染问题
+
+```js
+undefined = 1;
+!!undefined; // true
+!!void 0; // false
+```
+
+- 匿名函数自执行写法
+
+```js
+(function() {}());
+(function() {})();
+[function() {}()];
+
+~function() {}();
+!function() {}();
++function() {}();
+-function() {}();
+
+delete function() {}();
+typeof function() {}();
+void function() {}();
+new function() {}();
+new function() {};
+
+var f = function() {}();
+
+1, function() {}();
+1 ^ function() {}();
+1 > function() {}();
+```
+
+## 参考资料
+
+[JavaScript 有用的代码片段和 trick](https://mp.weixin.qq.com/s/Z-Vcfl1D5oKMLliGTVhE1g)
