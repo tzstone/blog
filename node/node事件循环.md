@@ -5,10 +5,11 @@
 由于大多数现代内核都是多线程的，因此它们可以处理在后台执行的多个操作。当其中一个操作完成时，内核会通知 Node.js，以便可以将相应的回调添加到轮询队列中以最终执行。
 
 **事件循环顺序**:
+
 ![](https://github.com/tzstone/MarkdownPhotos/blob/master/node-event-loop.jpeg)
 
-每个方框对应 事件循环 的一个阶段.
-每个阶段有一个 FIFO 队列, 用来存放待执行的回调. 当 事件循环 进入某个给定的阶段时, 会执行该阶段的一些特定操作, 然后执行该阶段队列里的回调, 直到队列耗尽或者执行的回调数量达到最大值, 此时 事件循环 将移到下一阶段, 以此类推.
+每个方框对应事件循环的一个阶段.
+每个阶段有一个 FIFO 队列, 用来存放待执行的回调. 当事件循环进入某个给定的阶段时, 会执行该阶段的一些特定操作, 然后执行该阶段队列里的回调, 直到队列耗尽或者执行的回调数量达到最大值, 此时事件循环将移到下一阶段, 以此类推.
 
 - `timers`: this phase executes callbacks scheduled by setTimeout() and setInterval().
   从技术上讲，poll 阶段控制何时执行定时器。
@@ -26,10 +27,10 @@
     - 如果脚本已经调用了`setImmediate()`，则事件循环将结束 poll 阶段并进入 check 阶段, 以执行这些调度脚本。
     - 如果脚本没有调用过`setImmediate()`，则事件循环将等待回调被添加到队列，然后立即执行它们。
 
-  一旦 poll 队列为空，事件循环 将检查已达到时间阈值的计时器。如果一个或多个计时器准备就绪，事件循环将回绕到 `timers` 阶段以执行那些计时器的回调。
+  一旦 poll 队列为空，事件循环将检查已达到时间阈值的计时器。如果一个或多个计时器准备就绪，事件循环将回绕到 `timers` 阶段以执行那些计时器的回调。
 
 - `check`: 此阶段允许人员在 poll 阶段完成后立即执行回调。
-  通常，在执行代码时，事件循环 最终会到达 poll 阶段，它将等待传入连接(incoming connections)，请求等。但是，如果某个回调已经调用`setImmediate()`并且 poll 阶段变为空闲，则将结束 poll 并进入 check 阶段，而不是等待 poll 事件。
+  通常，在执行代码时，事件循环最终会到达 poll 阶段，它将等待传入连接(incoming connections)，请求等。但是，如果某个回调已经调用`setImmediate()`并且 poll 阶段变为空闲，则将结束 poll 并进入 check 阶段，而不是等待 poll 事件。
 - `close callbacks`: 如果 socket 或者 handle 突然关闭(例如 socket.destroy())，则将在此阶段触发'close'事件。否则它将通过`process.nextTick()触发。
 
 ## `setImmediate()` vs `setTimeout()`
