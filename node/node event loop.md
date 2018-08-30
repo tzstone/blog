@@ -91,7 +91,7 @@ timeout
 
 ## `process.nextTick()`
 
-从技术上讲, `process.nextTick()`不是 event loop 的一部分。相反，`nextTickQueue`将在执行完当前阶段的 queue，进入下一阶段前处理(即两个阶段的中间), 而不管 event loop 当前处于哪个阶段。这很容易造成问题--当递归调用`process.nextTick()`时, event loop 无法进入 poll 阶段, I/O 会被堵塞.
+从技术上讲, `process.nextTick()`不是 event loop 的一部分。相反，`nextTickQueue`将在执行完当前阶段的 queue，进入下一阶段前处理(即两个阶段的中间), 而不管 event loop 当前处于哪个阶段。这很容易造成问题--当递归调用`process.nextTick()`时, event loop 无法进入 poll 阶段, I/O 会被堵塞.
 
 ```js
 const fs = require("fs");
@@ -130,7 +130,7 @@ nextTick4;
 setTimeout;
 ```
 
-event loop 堵塞在 poll 阶段, 收到 fs.readFile 的完成通知, 将 callback 加入 poll queue 并执行, 并在 callback 中设定了`setTimeout`, `setImmediate`, `process.nextTick()`的 callback.
+event loop 堵塞在 poll 阶段, 收到 fs.readFile 的完成通知, 将 callback 加入 poll queue 并执行, 并在 callback 中设定了`setTimeout`, `setImmediate`, `process.nextTick()`的 callback.
 
 当 fs.readFile 的回调执行完, 即 poll 空闲时, 由于设定了`setImmediate`, event loop 会进入`check`阶段.
 
