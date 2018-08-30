@@ -16,7 +16,7 @@
 - `idle, prepare`: 仅在 node 内部使用.
 - `poll`: 获取新的 I/O 事件; 执行与 I/O 相关的设定的 callback; 适当条件下 node 将堵塞在这里.
 - `check`: 执行`setImmediate()`设定的 callback
-- `close callbacks`: 一些 close callback 将在这里执行, 如果`socket.on('close', callback)`
+- `close callbacks`: 一些 close callback 将在这里执行, 如果`socket.on('close', callback)`
 
 ## `poll`阶段
 
