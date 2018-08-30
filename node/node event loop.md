@@ -64,7 +64,7 @@ immediate
 timeout
 ```
 
-在 I/O 周期内运行, setImmediate 的回调通常会先执行
+在 I/O 周期内运行, `setImmediate` 的回调总是比 `setTimeout` 先执行. 因为在 I/O 周期内设定了 `setImmediate` 和 `setTimeout` 的 callback 后, 当 poll queue 为空时, event loop 将按顺序分别进入 `check` 和 `timer` 阶段执行设定的 callback.
 
 ```js
 // timeout_vs_immediate.js
@@ -89,13 +89,58 @@ immediate
 timeout
 ```
 
-使用`setImmediate()`而不是`setTimeout()`的主要优点是: 如果在 I/O 周期内调度, `setImmediate()`将始终在任何定时器之前执行，不管当前存在多少定时器。
-
 ## `process.nextTick()`
 
-从技术上讲, `process.nextTick()`不是 event loop 的一部分。相反，`nextTickQueue`将在当前操作完成后处理，而不管 event loop 的当前阶段如何。
+从技术上讲, `process.nextTick()`不是 event loop 的一部分。相反，`nextTickQueue`将在执行完当前阶段的 queue，进入下一阶段前处理(即两个阶段的中间), 而不管 event loop 当前处于哪个阶段。这很容易造成问题--当递归调用`process.nextTick()`时, event loop 无法进入 poll 阶段, I/O 会被堵塞.
 
-在给定的阶段调用`process.nextTick()`时, 所有`process.nextTick()`的回调将会在当前的 event loop 中执行. 这很容易造成问题--当递归调用`process.nextTick()`时, event loop 无法进入 poll 阶段, I/O 会被堵塞.
+```js
+const fs = require("fs");
+
+fs.readFile("./index.js", () => {
+  setTimeout(() => {
+    console.log("setTimeout");
+  }, 0);
+  setImmediate(() => {
+    console.log("setImmediate1");
+    process.nextTick(() => {
+      console.log("nextTick3");
+    });
+  });
+  setImmediate(() => {
+    console.log("setImmediate2");
+    process.nextTick(() => {
+      console.log("nextTick4");
+    });
+  });
+  process.nextTick(() => {
+    console.log("nextTick1");
+  });
+  process.nextTick(() => {
+    console.log("nextTick2");
+  });
+});
+
+// result
+nextTick1;
+nextTick2;
+setImmediate1;
+setImmediate2;
+nextTick3;
+nextTick4;
+setTimeout;
+```
+
+event loop 堵塞在 poll 阶段, 收到 fs.readFile 的完成通知, 将 callback 加入 poll queue 并执行, 并在 callback 中设定了`setTimeout`, `setImmediate`, `process.nextTick()`的 callback.
+
+当 fs.readFile 的回调执行完, 即 poll 空闲时, 由于设定了`setImmediate`, event loop 会进入`check`阶段.
+
+进入`check`阶段之前, 会先执行`process.nextTick()`的 callback, `输出 nextTick1, nextTick2`.
+
+进入`check`阶段, 执行`setImmediate`的 callback, `输出 setImmediate1, setImmediate2`, 并在 callback 中设定了`process.nextTick()`的 callback.
+
+结束`check`阶段, 进入`close callback`阶段之前, 执行`process.nextTick()`的 callback, `输出 nextTick3, nextTick4`.
+
+最后进入`timer`阶段执行`setTimeout`的 callback, `输出setTimeout`
 
 ## 参考资料
 
