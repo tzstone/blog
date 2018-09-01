@@ -20,10 +20,10 @@
 - `check`: 执行`setImmediate()`设定的 callback
 - `close callbacks`: 一些 close callback 将在这里执行, 如果`socket.on('close', callback)`
 
-event 是由 uv_run 驱动的, 并且是在 UV_RUN_ONCE 模式下执行的. uv_run 有另外两种模式 UV_RUN_DEFAULT 和 UV_RUN_NOWAIT.
+event 是由 `uv_run` 驱动的, 并且是在 `UV_RUN_ONCE` 模式下执行的. `uv_run` 有另外两种模式 `UV_RUN_DEFAULT` 和 `UV_RUN_NOWAIT`.
 由源码可知, 在进入 poll 阶段前会计算 timeout 并将 timeout 传入 `uv__io_poll`. [timeout 的计算规则](http://docs.libuv.org/en/v1.x/design.html#the-i-o-loop)如下:
 
-- 如果 loop 运行在 UV_RUN_NOWAIT 模式下, timeout 为 0.
+- 如果 loop 运行在 `UV_RUN_NOWAIT` 模式下, timeout 为 0.
 - 如果 loop 将要被停止 (如调用了 uv_stop()), timeout 为 0.
 - 如果没有活动的 handles 或者 requests, timeout 为 0.
 - 如果有活动的 idle handles, timeout 为 0.
@@ -197,19 +197,19 @@ fileReaderTime 10
 解释:
 
 1.  程序启动, event loop 初始化, 执行脚本, 然后开始执行 event loop
-2.  `timer` 阶段, 没有就绪的 timer(setTimeout 需要 5ms 才就绪), 进入下一阶段
+2.  `timer` 阶段, 没有就绪的 timer(setTimeout 需要 5ms 才就绪), 进入下一阶段
 3.  `pending callbacks`阶段, 无系统操作的 callback, 进入下一阶段
 4.  `idle, prepare`阶段, 略过, 进入下一阶段
 5.  `poll`阶段, event loop 堵塞在该阶段, 等待 callback. 5ms 时 timer 准备就绪, 此时 poll 仍然是空闲的, 因此 event loop 会回绕到`timer`阶段(经过`check`, `close callbacks`阶段)
 6.  下一个 loop 的`timer`阶段, 执行 timer 的 callback, 此时已经过了 6ms(setTimeout 延时 5ms + `check`和`close callbacks`阶段的消耗), callback 执行完后, 经过`pending callbacks`阶段和`idle, prepare`阶段, 进入`poll`阶段
-7.  下一个 loop 的`poll`阶段, event loop 堵塞在该阶段, 等待 callback. 10ms 时 fs.readFile 完成, 将 callback 加入 poll queue 并立即执行
+7.  下一个 loop 的`poll`阶段, event loop 堵塞在该阶段, 等待 callback. 10ms 时 fs.readFile 完成, 将 callback 加入 poll queue 并立即执行
 
 ## `setImmediate()` vs `setTimeout()`
 
 - setImmediate: 一旦当前 poll 阶段完成便立即执行
 - setTimeout: 经过最小时间阈值(ms)后运行
 
-注:  在 node 中，setTimeout(cb, 0) === setTimeout(cb, 1)
+注: 在 node 中，setTimeout(cb, 0) === setTimeout(cb, 1)
 
 定时器的执行顺序根据调用它们的上下文而有所不同.如果从主模块中调用两者，则时间将受到进程性能的限制（可能受到计算机上运行的其他应用程序的影响）。
 例如，如果在非 I/O 周期内(比如主模块)运行脚本，则执行两个定时器的顺序是不确定的，因为它受进程性能的约束.
