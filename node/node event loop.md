@@ -4,7 +4,7 @@
 
 由于大多数现代内核都是多线程的，因此它们可以处理在后台执行的多个操作。当其中一个操作完成时，内核会通知 Node.js，以便可以将相应的回调添加到轮询队列中以最终执行。
 
-注: node 源码的版本为 10.9.0
+注: 以下 node 源码的版本为 10.9.0
 
 **event loop 顺序**:
 
@@ -21,7 +21,7 @@
 - `close callbacks`: 一些 close callback 将在这里执行, 如果`socket.on('close', callback)`
 
 event 是由 `uv_run` 驱动的, 并且是在 `UV_RUN_ONCE` 模式下执行的. `uv_run` 有另外两种模式 `UV_RUN_DEFAULT` 和 `UV_RUN_NOWAIT`.
-由源码可知, 在进入 poll 阶段前会计算 timeout 并将 timeout 传入 `uv__io_poll`. [timeout 的计算规则](http://docs.libuv.org/en/v1.x/design.html#the-i-o-loop)如下:
+由 👇 源码可知, 在进入 poll 阶段前会计算 timeout 并将 timeout 传入 `uv__io_poll`. [timeout 的计算规则](http://docs.libuv.org/en/v1.x/design.html#the-i-o-loop)如下:
 
 - 如果 loop 运行在 `UV_RUN_NOWAIT` 模式下, timeout 为 0.
 - 如果 loop 将要被停止 (如调用了 uv_stop()), timeout 为 0.
@@ -30,9 +30,11 @@ event 是由 `uv_run` 驱动的, 并且是在 `UV_RUN_ONCE` 模式下执行的. 
 - 如果有任何等待被 close 的 callbacks(`close callbacks`阶段的回调), timeout 为 0.
 - 如果上述条件都不匹配, timeout 会取最近的一个定时器的剩余超时时间, 如果没有活动的定时器, timeout 则被设置为无限大.
 
-当 timeout 不为 0 时, event loop 就会堵塞在 poll 阶段等待 callback 的到来. 这样 poll 在等待时, 如果没有任何 I/O 事件触发, 也会由 timeout 超时跳出等待.
+当 timeout 为 0 时, 会立即触发超时结束当前 event loop, 进入下一个循环.
 
-另外, 在 UV_RUN_ONCE 模式下, 每次循环结束前(`close callbacks`执行结束后), 会调用`uv__run_timers(loop);`执行对 timer 的超时判断, 所以实际上在一次 event loop 中, timer 有两个可能执行的地方: 最开始的`timer`阶段及`close callbacks`阶段之后--这导致了有时候`setImmediate()`和`setTimeout()`的执行顺序是不确定的.
+timeout 不为 0 时, event loop 就会堵塞在 poll 阶段等待 callback 的到来. timeout 的作用是让 poll 在等待时, 如果没有任何 I/O 事件触发, 也会由 timeout 超时跳出等待.
+
+另外, 在 `UV_RUN_ONCE` 模式下, 每次循环结束前(`close callbacks`执行结束后), 会调用`uv__run_timers(loop);`执行对 timer 的超时判断, 所以实际上在一次 event loop 中, timer 有两个可能执行的地方: 最开始的`timer`阶段及`close callbacks`阶段之后--这导致了有时候`setImmediate()`和`setTimeout()`的执行顺序是不确定的.
 
 ```js
 // uv_run源码注解
@@ -209,10 +211,14 @@ fileReaderTime 10
 - setImmediate: 一旦当前 poll 阶段完成便立即执行
 - setTimeout: 经过最小时间阈值(ms)后运行
 
-注: 在 node 中，setTimeout(cb, 0) === setTimeout(cb, 1)
-
 定时器的执行顺序根据调用它们的上下文而有所不同.如果从主模块中调用两者，则时间将受到进程性能的限制（可能受到计算机上运行的其他应用程序的影响）。
 例如，如果在非 I/O 周期内(比如主模块)运行脚本，则执行两个定时器的顺序是不确定的，因为它受进程性能的约束.
+
+在 node 中，setTimeout(cb, 0) === setTimeout(cb, 1).
+
+由于 CPU 工作耗费时间, 在下面例子中, 如果第一次 loop 前的准备耗时超过 1ms, 则进入`timer`阶段时`setTimeout(cb, 1)`已经超时, 此时`setTimeout`会比`setImmediate`先执行.
+
+如果第一次 loop 前的准备耗时小于 1ms, 则进入`timer`阶段时`setTimeout(cb, 1)`未就绪, 此时会先执行`setImmediate`, 等到结束`close callbacks`后再继续执行`uv__run_timers`
 
 ```js
 // timeout_vs_immediate.js
@@ -384,6 +390,10 @@ fileread: 24 ms
 setImmediate
 setImmediate
 ```
+
+贴一个 cnode 上[@bigtree9307](https://cnodejs.org/topic/56e3be21f5d830306e2f0fd3)画的流程图:
+
+<img src="https://github.com/tzstone/MarkdownPhotos/blob/master/node-%E6%B5%81%E7%A8%8B.jpeg" align=center/>
 
 ## 参考资料
 
