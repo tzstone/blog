@@ -103,7 +103,7 @@ function require(/* ... */) {
     - 查找当前文件目录(与`START`同级目录)是否有`node_modules`文件夹, 如果有, 尝试:
       - LOAD_AS_FILE(X)
       - LOAD_AS_DIRECTORY(X)
-    - 如果 LOAD 未找到 or 当前目录无`node_modules`文件夹, 则尝试往上一级文件目录查找`node_modules`文件夹, 以此类推, 直到访问到当前项目路径的根目录. 如果此时仍未找到, 则报错.
+    - 如果 LOAD 未找到 or 当前目录无`node_modules`文件夹, 则尝试往上一级文件目录查找`node_modules`文件夹, 以此类推, 直到访问到当前项目路径的根目录. 如果此时仍未找到, 则报错.
 
 `注意`: 使用 `npm install -g xxx`安装了 xxx 模块时, 在项目中引用可能会提示找不到, 因为全局安装的模块通常是安装在其他路径, 而不在项目路径上.
 
