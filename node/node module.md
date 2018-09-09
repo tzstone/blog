@@ -2,7 +2,7 @@
 
 在 Node.js 模块系统中，每个文件都被视为独立的模块。模块内的本地变量是私有的，因为模块被 Node.js 包装在一个函数中（即模块包装器）。
 
-### `模块包装器`
+### 模块包装器
 
 在执行模块代码之前，Node.js 会使用一个如下的函数包装器将其包装
 
@@ -16,12 +16,12 @@
 
 - 它保持了顶层的变量（用 var、const 或 let 定义）作用在模块范围内，而不是全局对象。
 - 它有助于提供一些看似全局的但实际上是模块特定的变量，例如：
-  - 实现者可以用于从模块中导出值的 `module` 和 `exports` 对象。
+  - 实现者可以使用`module` 和 `exports` 对象从模块中导出值。
   - 包含模块绝对文件名和目录路径的快捷变量 `__filename` 和 `__dirname` 。
 
 ### `module.exports`和`exports`
 
-`exports` 变量是在模块的文件级别作用域内有效的，它在模块被执行前被赋予 `module.exports` 的值。换句话说, `exports`是`module.exports`的快捷方式, 它们都指向同一个对象引用.
+`exports` 变量是在模块的文件级别作用域内有效的，它在模块被执行前被赋予 `module.exports` 的值。换句话说, `exports`是`module.exports`的快捷方式, 它们都指向同一个对象的引用.
 
 然而, 当`exports`被赋予一个新的值时, 它将不再绑定到`module.exports`.
 
@@ -30,7 +30,7 @@ module.exports.hello = true; // Exported from require of module
 exports = { hello: false }; // Not exported, only available in the module
 ```
 
-当`module.exports`被赋予一个新的值时, 也会重新赋值`exports`, 类似于:
+而当`module.exports`被赋予一个新的值时, 也会重新赋值`exports`, 类似于:
 
 ```js
 module.exports = exports = function Constructor() {
@@ -40,7 +40,7 @@ module.exports = exports = function Constructor() {
 
 `require`的类似实现:
 
-注意, `require`返回的是`module.exports`而不是`exports`
+注意, `require`返回的是`module.exports`而不是`exports`(所以当`exports`被赋予一个新的值时, 模块导出结果不会改变)
 
 ```js
 function require(/* ... */) {
@@ -69,7 +69,7 @@ function require(/* ... */) {
 
 `注意`:
 
-- 模块是基于其解析的文件名进行缓存的。 由于调用模块的位置的不同，模块可能被解析成不同的文件名（比如从 node_modules 目录加载），这样就不能保证 `require('foo')` 总能返回完全相同的对象(可能会被解析到不同的文件)。
+- 模块是基于其解析的文件名进行缓存的。 由于调用模块的位置的不同，模块可能被解析成不同的文件名（比如从 node_modules 目录加载），这样就不能保证 `require('foo')` 总能返回完全相同的对象(因为可能会被解析到不同的文件)。
 
 - 此外，在不区分大小写的文件系统或操作系统中，被解析成不同的文件名可以指向同一文件，但缓存仍然会将它们视为不同的模块，并多次重新加载。 例如，`require('./foo')` 和 `require('./FOO')` 返回两个不同的对象，而不会管 `./foo`和 `./FOO` 是否是相同的文件。
 
@@ -100,10 +100,10 @@ function require(/* ... */) {
 
 4.  LOAD_NODE_MODULES(X, START) (START = dirname(Y))
 
-    - 查找当前文件目录是否有`node_modules`文件夹, 如果有, 尝试:
+    - 查找当前文件目录(与`START`同级目录)是否有`node_modules`文件夹, 如果有, 尝试:
       - LOAD_AS_FILE(X)
       - LOAD_AS_DIRECTORY(X)
-    - 如果 LOAD 未找到 or 当前目录无`node_modules`文件夹, 则尝试往上一级目录查找`node_modules`文件夹, 以此类推, 直到访问到当前项目路径的根目录. 如果此时仍未找到, 则报错.
+    - 如果 LOAD 未找到 or 当前目录无`node_modules`文件夹, 则尝试往上一级文件目录查找`node_modules`文件夹, 以此类推, 直到访问到当前项目路径的根目录. 如果此时仍未找到, 则报错.
 
 `注意`: 使用 `npm install -g xxx`安装了 xxx 模块时, 在项目中引用可能会提示找不到, 因为全局安装的模块通常是安装在其他路径, 而不在项目路径上.
 
@@ -158,7 +158,7 @@ NODE_MODULES_PATHS(START)
 5. return DIRS
 ```
 
-### `主模块`
+### 主模块
 
 当 Node.js 直接运行一个文件时，`require.main` 会被设为它的 `module`。 这意味着可以通过 `require.main === module` 来判断一个文件是否被直接运行.
 
