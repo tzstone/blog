@@ -393,7 +393,7 @@ setImmediate
 
 ## `microtask`
 
-在浏览器环境下, 每个`macrotask`执行完后会执行`microtask`任务队列. 然而, 在 node 环境下, `microtask`是在事件循环的各个阶段之间执行的. node 环境下的`microtask`包括 `process.nextTick` 和 `promise.then`. `process.nextTick` 比 `promise.then` 更先执行(具体可看[源码](https://github.com/nodejs/node/blob/master/lib/internal/process/next_tick.js))
+在浏览器环境下, 每个`macrotask`执行完后会执行`microtask`任务队列. 然而, 在 node 环境下, `microtask`是在事件循环的各个阶段之间执行的. node 环境下的`microtask`包括 `process.nextTick` 和 `promise.then`. 其中`process.nextTick` 比 `promise.then` 更先执行(具体可看[源码](https://github.com/nodejs/node/blob/master/lib/internal/process/next_tick.js))
 
 - 举个栗子
 
@@ -448,15 +448,15 @@ then1;
 
 解释:
 
-1. 文件读取完成进入回调函数后, `setTimeout`, `setImmediate`分别进入各个的队列, `Promise`执行输出"promise3", `then`回调进入队列, `process.nextTick`进入队列.
+1. 文件读取完成进入回调函数后, `setTimeout`, `setImmediate`分别进入各个的队列, `Promise`执行输出"promise3", `then`回调进入队列, `process.nextTick`进入队列.
 
 2. 此时`poll`队列已经执行完了, 由于设置了`setImmediate`, 所以 event loop 会进入下一阶段. 在进入下一阶段前, 会执行`microtask`任务. 先清空`process.nextTick`队列的任务, 输出"nextTick1", 再清空`promise.then`队列, 输出"then3"
 
-3. 接下来进入`check`阶段, 执行`setImmediate`的回调, 输出"setImmediate", 同时`process.nextTick`和`promise.then`的回调, `promise`执行输出"promise2"
+3. 接下来进入`check`阶段, 执行`setImmediate`的回调, 输出"setImmediate", 同时`process.nextTick`和`promise.then`进队列, `promise`执行输出"promise2"
 
 4. 进入下一阶段前, 又会执行`microtask`任务. 输出"nextTick2"和"then2"
 
-5. `setTimeout` 与此类似
+5. `setTimeout` 与此类似
 
 贴一个 cnode 上[@bigtree9307](https://cnodejs.org/topic/56e3be21f5d830306e2f0fd3)画的流程图:
 
