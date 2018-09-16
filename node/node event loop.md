@@ -20,6 +20,10 @@
 - `check`: 执行`setImmediate()`设定的 callback
 - `close callbacks`: 一些 close callback 将在这里执行, 如果`socket.on('close', callback)`
 
+贴个 event loop 工作的流程图(省略了`idle, prepare`阶段)
+
+<img src="https://github.com/tzstone/MarkdownPhotos/blob/master/event-loop-phase.png" align=center/>
+
 event 是由 `uv_run` 驱动的, 并且是在 `UV_RUN_ONCE` 模式下执行的. `uv_run` 有另外两种模式 `UV_RUN_DEFAULT` 和 `UV_RUN_NOWAIT`.
 由 👇 源码可知, 在进入 poll 阶段前会计算 timeout 并将 timeout 传入 `uv__io_poll`. [timeout 的计算规则](http://docs.libuv.org/en/v1.x/design.html#the-i-o-loop)如下:
 
@@ -393,7 +397,7 @@ setImmediate
 
 ## `microtask`
 
-在浏览器环境下, 每个`macrotask`执行完后会执行`microtask`任务队列. 然而, 在 node 环境下, `microtask`是在事件循环的各个阶段之间执行的. node 环境下的`microtask`包括 `process.nextTick` 和 `promise.then`. 其中`process.nextTick` 比 `promise.then` 更先执行(具体可看[源码](https://github.com/nodejs/node/blob/master/lib/internal/process/next_tick.js))
+在浏览器环境下, 每个`macrotask`执行完后会执行`microtask`任务队列. 然而, 在 node 环境下, `microtask`是在事件循环的各个阶段之间执行的. node 环境下的`microtask`包括 `process.nextTick` 和 `promise`. 其中`process.nextTick` 比 `promise` 更先执行(具体可看[源码](https://github.com/nodejs/node/blob/master/lib/internal/process/next_tick.js))
 
 - 举个栗子
 
@@ -458,6 +462,12 @@ then1;
 
 5. `setTimeout` 与此类似
 
+## event loop 过忙(exhausted)时的几个建议
+
+- 使用 cluster 模式, 充分利用多核 cpu
+- libuv 默认创建一个有 4 个线程的线程池, 可以通过设置环境变量`UV_THREADPOOL_SIZE`来覆盖池的默认大小
+- 如果 Node.js 在 CPU 繁重的操作上花费太多时间, 那么将工作下放到服务(services), 甚至使用更适合特定任务的另一种语言可能是一个可行的选择
+
 贴一个 cnode 上[@bigtree9307](https://cnodejs.org/topic/56e3be21f5d830306e2f0fd3)画的流程图:
 
 <img src="https://github.com/tzstone/MarkdownPhotos/blob/master/node-%E6%B5%81%E7%A8%8B.jpeg" align=center/>
@@ -475,3 +485,5 @@ then1;
 - [lib/internal/process/next_tick.js](https://github.com/nodejs/node/blob/master/lib/internal/process/next_tick.js)
 
 - [深入理解 js 事件循环机制（Node.js 篇）](http://lynnelv.github.io/js-event-loop-nodejs)
+
+- [What you should know to really understand the Node.js Event Loop](https://medium.com/the-node-js-collection/what-you-should-know-to-really-understand-the-node-js-event-loop-and-its-metrics-c4907b19da4c)
