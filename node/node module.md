@@ -221,8 +221,8 @@ NODE_MODULES_PATHS(START)
 5. return DIRS
 ```
 
+`require`源码:
 ```js
-// require源码
 Module.prototype.require = function(id) {
   // ...
   return Module._load(id, this, /* isMain */ false);
