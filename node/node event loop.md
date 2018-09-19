@@ -275,6 +275,16 @@ timeout
 
 使用`node index.js`命令运行脚本时, 最终会进入 node 源码`./lib/internal/modules/cjs/loader.js`中的`Module.runMain`方法, 脚本 load 后会调用`process._tickCallback();`清空 nextTickQueue.
 
+```js
+Module.runMain = function() {
+  // ...
+  Module._load(process.argv[1], null, true);
+
+  // Handle any nextTicks added in the first tick of the program
+  process._tickCallback();
+};
+```
+
 - 例子 1
 
 ```js

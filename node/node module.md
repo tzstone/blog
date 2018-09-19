@@ -221,6 +221,58 @@ NODE_MODULES_PATHS(START)
 5. return DIRS
 ```
 
+```js
+// require源码
+Module.prototype.require = function(id) {
+  // ...
+  return Module._load(id, this, /* isMain */ false);
+};
+
+// Check the cache for the requested file.
+// 1. If a module already exists in the cache: return its exports object.
+// 2. If the module is native: call `NativeModule.require()` with the
+//    filename and return the result.
+// 3. Otherwise, create a new module for the file and save it to the cache.
+//    Then have it load  the file contents before returning its exports
+//    object.
+Module._load = function(request, parent, isMain) {
+  if (parent) {
+    debug('Module._load REQUEST %s parent: %s', request, parent.id);
+  }
+
+  var filename = Module._resolveFilename(request, parent, isMain);
+
+  var cachedModule = Module._cache[filename];
+
+  // 如果模块已被缓存, 直接返回
+  if (cachedModule) {
+    updateChildren(parent, cachedModule, true);
+    return cachedModule.exports;
+  }
+
+  // 是否是核心模块
+  if (NativeModule.nonInternalExists(filename)) {
+    debug('load native module %s', request);
+    return NativeModule.require(filename);
+  }
+
+  // 以上都不是, 则创建新的Module对象并缓存起来
+  // Don't call updateChildren(), Module constructor already does.
+  var module = new Module(filename, parent);
+
+  if (isMain) {
+    process.mainModule = module;
+    module.id = '.';
+  }
+
+  Module._cache[filename] = module;
+
+  tryModuleLoad(module, filename);
+
+  return module.exports;
+};
+```
+
 ### 主模块
 
 当 Node.js 直接运行一个文件时，`require.main` 会被设为它的 `module`。 这意味着可以通过 `require.main === module` 来判断一个文件是否被直接运行.
