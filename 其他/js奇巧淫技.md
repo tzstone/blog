@@ -381,6 +381,20 @@ const modelAndVIN = ({ model, engine: { vin } }) => {
 modelAndVIN(car); // => model: bmw 2018  vin: 12345
 ```
 
+- 强制参数
+
+默认情况下, 如果不向函数参数传值, 那么 JS 会将函数参数设置为 undefined. 其它一些语言则会发出警告或错误. 要执行参数分配, 可以使用 if 语句抛出未定义的错误, 或者可以利用强制参数.
+
+```js
+mandatory = () => {
+  throw new Error('Missing parameter!');
+};
+foo = (bar = mandatory()) => {
+  // 这里如果不传入参数, 就会执行manadatory函数报出错误
+  return bar;
+};
+```
+
 ## 参考资料
 
 - [JavaScript 有用的代码片段和 trick](https://mp.weixin.qq.com/s/Z-Vcfl1D5oKMLliGTVhE1g)
