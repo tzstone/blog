@@ -1,22 +1,22 @@
-# 从源码了解vue生命周期
+# 从源码了解 vue 生命周期
 
-本文主要从源码了解`beforeCreate`, `created`, `beforeMount`, `mounted`四个生命周期阶段, 基于vue2.5.16.  
+本文主要从源码了解`beforeCreate`, `created`, `beforeMount`, `mounted`四个生命周期阶段, 基于 vue2.5.16.  
 先贴一个自己画的图:  
 <img src="https://github.com/tzstone/MarkdownPhotos/blob/master/vue%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.jpg" width=500
  height=1000 align=center />
 
 ## `beforeCreate`和`created`
 
-创建一个Vue实例首先会调用`this._init()`方法. 源码如下  
+创建一个 Vue 实例首先会调用`this._init()`方法. 源码如下  
 可以看到`beforeCreate`之前会进行一些状态的初始化, 在`beforeCreate`和`created`之间则进行对`provide`, `inject`, `props`, `methods`, `data`, `computed`, `watch`进行初始化.
 
 <br />
 
 引用官方的解释:
 
->`beforeCreate`: 在实例初始化之后, 数据观测 (data observer) 和 event/watcher 事件配置之前被调用。
+> `beforeCreate`: 在实例初始化之后, 数据观测 (data observer) 和 event/watcher 事件配置之前被调用。
 
-> `created`: 在实例创建完成后被立即调用。在这一步，实例已完成以下的配置：数据观测 (data observer)，属性和方法的运算，watch/event 事件回调。然而，挂载阶段还没开始，$el 属性目前不可见。
+> `created`: 在实例创建完成后被立即调用。在这一步，实例已完成以下的配置：数据观测 (data observer)，属性和方法的运算，watch/event 事件回调。然而，挂载阶段还没开始，\$el 属性目前不可见。
 
 ```javascript
 Vue.prototype._init = function(options) {
@@ -30,7 +30,7 @@ Vue.prototype._init = function(options) {
     initProvide(vm); // resolve provide after data/props
     callHook(vm, 'created');
     ...
-    
+
     vm.$mount(vm.$options.el);
 }
 
@@ -67,23 +67,47 @@ function initState (vm) {
     initWatch(vm, opts.watch); // 订阅观察者
   }
 }
+
+function initComputed (vm, computed) {
+  // $flow-disable-line
+  var watchers = vm._computedWatchers = Object.create(null);
+  // computed properties are just getters during SSR
+  var isSSR = isServerRendering();
+
+  for (var key in computed) {
+    var userDef = computed[key];
+    var getter = typeof userDef === 'function' ? userDef : userDef.get;
+
+    if (!isSSR) {
+      // create internal watcher for the computed property.
+      watchers[key] = new Watcher(
+        vm,
+        getter || noop,
+        noop,
+        computedWatcherOptions
+      );
+    }
+
+    // ...
+  }
+}
 ```
 
 <br />
 
 ## `beforeMount`和`mounted`
 
-`this._init()`最后会调用`vm.$mount()`, 这里涉及到vue的渲染机制.  
+`this._init()`最后会调用`vm.$mount()`, 这里涉及到 vue 的渲染机制.  
 `$mount()`先把`template/el`转换成`render`函数并赋值给`this.$options.render`, 接下来会调用`new Watcher()`及`updateComponent()`, 执行`vm._update(vm._render(), hydrating)`.  
- `vm._render()`会返回一个VNode, `vm._update(vnode)`对新旧vnode进行diff, 返回一个渲染后的真实的dom, 最后这个dom会赋值给`vm.$el`.
+ `vm._render()`会返回一个 VNode, `vm._update(vnode)`对新旧 vnode 进行 diff, 返回一个渲染后的真实的 dom, 最后这个 dom 会赋值给`vm.$el`.
 
 <br />
 
 引用官方的解释:
->`beforeMount`: 在挂载开始之前被调用：相关的 render 函数首次被调用。
 
->`mounted`: el 被新创建的 vm.$el 替换，并挂载到实例上去之后调用该钩子。如果 root 实例挂载了一个文档内元素，当 mounted 被调用时 vm.$el 也在文档内。
+> `beforeMount`: 在挂载开始之前被调用：相关的 render 函数首次被调用。
 
+> `mounted`: el 被新创建的 vm.$el 替换，并挂载到实例上去之后调用该钩子。如果 root 实例挂载了一个文档内元素，当 mounted 被调用时 vm.$el 也在文档内。
 
 ```javascript
 // 运行时构建的$mount函数
@@ -159,10 +183,11 @@ var Watcher = function Watcher (
 ```
 
 ## 总结
-* `beforecreate`: 此时`data`, `props`, `methods`等还没初始化, 无法调用, 也不知道能做啥.
-* `created`: `data`, `props`, `methods`等初始化完成, 可以进行调用.(网上有些文章说`mounted`里才发请求, 其实`created`里面就可以了.)
-* `beforeMount`: `vm.$el`已赋值, 但是el中的变量未渲染, 使用如`{{msg}}`之类的进行占位.
-* `mounted`: `vm.$el`已被渲染完后的dom替换
+
+- `beforecreate`: 此时`data`, `props`, `methods`等还没初始化, 无法调用, 也不知道能做啥.
+- `created`: `data`, `props`, `methods`等初始化完成, 可以进行调用.(网上有些文章说`mounted`里才发请求, 其实`created`里面就可以了.)
+- `beforeMount`: `vm.$el`已赋值, 但是 el 中的变量未渲染, 使用如`{{msg}}`之类的进行占位.
+- `mounted`: `vm.$el`已被渲染完后的 dom 替换
 
 <br />
 
@@ -170,7 +195,6 @@ var Watcher = function Watcher (
 <img src="https://cn.vuejs.org/images/lifecycle.png" width=500
  height=1200 align=center />
 
-
 参考资料:  
 [实例生命周期钩子](https://cn.vuejs.org/v2/guide/instance.html#%E5%AE%9E%E4%BE%8B%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E9%92%A9%E5%AD%90)  
-[【Vue源码探究二】从 $mount 讲起，一起探究Vue的渲染机制](https://segmentfault.com/a/1190000009467029)
+[【Vue 源码探究二】从 \$mount 讲起，一起探究 Vue 的渲染机制](https://segmentfault.com/a/1190000009467029)
