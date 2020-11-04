@@ -67,7 +67,7 @@ var applyMixin = function (Vue) {
   }
 };
 
-// 从根组件向所有子组件注入$store对象
+// 从根组件向所有子组件注入$store对象, 所以所有的vue实例中都可以访问到this.$store
 function vuexInit() {
   var options = this.$options;
   // store injection
@@ -142,10 +142,12 @@ var Store = function Store(options) {
   // init root module.
   // this also recursively registers all sub-modules
   // and collects all module getters inside this._wrappedGetters
+  // 模块安装
   installModule(this, state, [], this._modules.root);
 
   // initialize the store vm, which is responsible for the reactivity
   // (also registers _wrappedGetters as computed properties)
+  // 建立响应式联系
   resetStoreVM(this, state);
 
   // apply plugins
@@ -204,7 +206,8 @@ function installModule(store, rootState, path, module, hot) {
   });
 }
 
-// 默认情况下(即模块不带命名空间), getNamespace返回空(rootModule的path为空数组), 模块内部的action, mutation, getter都是注册到全局命名空间, 对应_actions, _mutations, _wrappedGetters
+// 默认情况下(即模块不带命名空间), getNamespace返回空(rootModule的path为空数组),
+// 模块内部的action, mutation, getter都是注册到全局命名空间, 对应_actions, _mutations, _wrappedGetters
 ModuleCollection.prototype.getNamespace = function getNamespace(path) {
   var module = this.root;
   return path.reduce(function (namespace, key) {
@@ -361,7 +364,8 @@ function resetStoreVM(store, state, hot) {
     };
     Object.defineProperty(store.getters, key, {
       get: function () {
-        // 相当于访问computed[key], 执行computed[key]对应函数时会执行wrappedGetter函数, 进而执行rawGetter(local.state,...), 进而访问store.state, 建立依赖关系
+        // 相当于访问computed[key], 执行computed[key]对应函数时会执行wrappedGetter函数,
+        // 进而执行rawGetter(local.state,...), 进而访问store.state, 建立依赖关系
         return store._vm[key];
       },
       enumerable: true, // for local getters
