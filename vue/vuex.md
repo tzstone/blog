@@ -43,6 +43,7 @@ new Vue({
 ```javascript
 // vuex.js v3.0.1
 var Vue; // bind on install
+// 初始化安装
 function install(_Vue) {
   if (Vue && _Vue === Vue) {
     {
@@ -76,7 +77,10 @@ function vuexInit() {
     this.$store = options.parent.$store;
   }
 }
+```
 
+```javascript
+// Store构造函数
 var Store = function Store(options) {
   var this$1 = this;
   if (options === void 0) options = {};
@@ -114,7 +118,7 @@ var Store = function Store(options) {
   this._mutations = Object.create(null);
   // 全局getter命名空间
   this._wrappedGetters = Object.create(null);
-  // 模块树
+  // 模块树, 从root module到子modules
   this._modules = new ModuleCollection(options);
   this._modulesNamespaceMap = Object.create(null);
   this._subscribers = [];
@@ -153,8 +157,12 @@ var Store = function Store(options) {
     devtoolPlugin(this);
   }
 };
+```
 
-// 初始化module中的state, getters, mutations, actions, 默认注册到全局命名空间
+```javascript
+// 模块安装
+// 初始化module中的state, getters, mutations, actions
+// 默认注册到全局命名空间, 这样多个模块能对同一个mutation或action做出响应
 function installModule(store, rootState, path, module, hot) {
   var isRoot = !path.length;
   var namespace = store._modules.getNamespace(path);
@@ -186,7 +194,6 @@ function installModule(store, rootState, path, module, hot) {
     registerAction(store, type, handler, local);
   });
 
-  // 将modules(包括子module)的getter注册到全局的_wrappedGetters
   module.forEachGetter(function (getter, key) {
     var namespacedType = namespace + key;
     registerGetter(store, namespacedType, getter, local);
@@ -222,6 +229,45 @@ function forEachValue(obj, fn) {
   });
 }
 
+// store._mutations[type]为数组, 多个模块可对同一个mutation做出响应
+function registerMutation(store, type, handler, local) {
+  var entry = store._mutations[type] || (store._mutations[type] = []);
+  entry.push(function wrappedMutationHandler(payload) {
+    handler.call(store, local.state, payload);
+  });
+}
+
+// store._actions[type]为数组, 多个模块可对同一个action做出响应
+function registerAction(store, type, handler, local) {
+  var entry = store._actions[type] || (store._actions[type] = []);
+  entry.push(function wrappedActionHandler(payload, cb) {
+    var res = handler.call(
+      store,
+      {
+        dispatch: local.dispatch,
+        commit: local.commit,
+        getters: local.getters,
+        state: local.state,
+        rootGetters: store.getters,
+        rootState: store.state,
+      },
+      payload,
+      cb,
+    );
+    if (!isPromise(res)) {
+      res = Promise.resolve(res);
+    }
+    if (store._devtoolHook) {
+      return res.catch(function (err) {
+        store._devtoolHook.emit('vuex:error', err);
+        throw err;
+      });
+    } else {
+      return res;
+    }
+  });
+}
+
 // type: namespace + key
 // 将modules(包括子module)的getter注册到全局的_wrappedGetters
 function registerGetter(store, type, rawGetter, local) {
@@ -242,6 +288,64 @@ function registerGetter(store, type, rawGetter, local) {
   };
 }
 
+// 构造本地上下文环境: commit, dispatch方法
+function makeLocalContext(store, namespace, path) {
+  const noNamespace = namespace === '';
+
+  const local = {
+    dispatch: noNamespace
+      ? store.dispatch
+      : (_type, _payload, _options) => {
+          const args = unifyObjectStyle(_type, _payload, _options);
+          const { payload, options } = args;
+          let { type } = args;
+
+          if (!options || !options.root) {
+            type = namespace + type;
+            if (process.env.NODE_ENV !== 'production' && !store._actions[type]) {
+              console.error(`[vuex] unknown local action type: ${args.type}, global type: ${type}`);
+              return;
+            }
+          }
+
+          return store.dispatch(type, payload);
+        },
+
+    commit: noNamespace
+      ? store.commit
+      : (_type, _payload, _options) => {
+          const args = unifyObjectStyle(_type, _payload, _options);
+          const { payload, options } = args;
+          let { type } = args;
+
+          if (!options || !options.root) {
+            type = namespace + type;
+            if (process.env.NODE_ENV !== 'production' && !store._mutations[type]) {
+              console.error(`[vuex] unknown local mutation type: ${args.type}, global type: ${type}`);
+              return;
+            }
+          }
+
+          store.commit(type, payload, options);
+        },
+  };
+
+  // getters and state object must be gotten lazily
+  // because they will be changed by vm update
+  Object.defineProperties(local, {
+    getters: {
+      get: noNamespace ? () => store.getters : () => makeLocalGetters(store, namespace),
+    },
+    state: {
+      get: () => getNestedState(store.state, path),
+    },
+  });
+
+  return local;
+}
+```
+
+```javascript
 // 建立state与getters的联系
 function resetStoreVM(store, state, hot) {
   var oldVm = store._vm;
@@ -250,7 +354,6 @@ function resetStoreVM(store, state, hot) {
   store.getters = {};
   var wrappedGetters = store._wrappedGetters;
   var computed = {};
-  // 将getter作为Vue实例的computed属性, 实现响应式
   forEachValue(wrappedGetters, function (fn, key) {
     // use computed to leverage its lazy-caching mechanism
     computed[key] = function () {
@@ -258,7 +361,7 @@ function resetStoreVM(store, state, hot) {
     };
     Object.defineProperty(store.getters, key, {
       get: function () {
-        // 相当于访问computed[key]
+        // 相当于访问computed[key], 执行computed[key]对应函数时会执行wrappedGetter函数, 进而执行rawGetter(local.state,...), 进而访问store.state, 建立依赖关系
         return store._vm[key];
       },
       enumerable: true, // for local getters
@@ -270,6 +373,7 @@ function resetStoreVM(store, state, hot) {
   // some funky global mixins
   var silent = Vue.config.silent;
   Vue.config.silent = true;
+  // 将getter作为Vue实例的computed属性, 建立state与getters的联系
   store._vm = new Vue({
     data: {
       $$state: state,
