@@ -101,9 +101,67 @@ function initComputed (vm, computed) {
       );
     }
 
-    // ...
+    // component-defined computed properties are already defined on the
+    // component prototype. We only need to define computed properties defined
+    // at instantiation here.
+    if (!(key in vm)) {
+      // 给computed的key添加getter和setter
+      defineComputed(vm, key, userDef)
+    } else if (process.env.NODE_ENV !== 'production') {
+      if (key in vm.$data) {
+        warn(`The computed property "${key}" is already defined in data.`, vm)
+      } else if (vm.$options.props && key in vm.$options.props) {
+        warn(`The computed property "${key}" is already defined as a prop.`, vm)
+      }
+    }
   }
 }
+
+export function defineComputed (
+  target: any,
+  key: string,
+  userDef: Object | Function
+) {
+  const shouldCache = !isServerRendering()
+  if (typeof userDef === 'function') {
+    sharedPropertyDefinition.get = shouldCache
+      ? createComputedGetter(key)
+      : userDef
+    sharedPropertyDefinition.set = noop
+  } else {
+    sharedPropertyDefinition.get = userDef.get
+      ? shouldCache && userDef.cache !== false
+        ? createComputedGetter(key)
+        : userDef.get
+      : noop
+    sharedPropertyDefinition.set = userDef.set
+      ? userDef.set
+      : noop
+  }
+  if (process.env.NODE_ENV !== 'production' &&
+      sharedPropertyDefinition.set === noop) {
+    sharedPropertyDefinition.set = function () {
+      warn(
+        `Computed property "${key}" was assigned to but it has no setter.`,
+        this
+      )
+    }
+  }
+  Object.defineProperty(target, key, sharedPropertyDefinition)
+}
+
+// computed的key的getter
+function createComputedGetter (key) {
+  return function computedGetter () {
+    const watcher = this._computedWatchers && this._computedWatchers[key]
+    if (watcher) {
+      // 触发依赖收集
+      watcher.depend()
+      return watcher.evaluate()
+    }
+  }
+}
+
 
 function initWatch (vm, watch) {
   for (var key in watch) {
@@ -525,6 +583,7 @@ export default class Watcher {
         process.env.NODE_ENV !== 'production' && warn(`Failed watching path: "${expOrFn}" ` + 'Watcher only accepts simple dot-delimited paths. ' + 'For full control, use a function instead.', vm);
       }
     }
+    // computed watcher, 不会立即求值, 同时持有一个dep实例
     if (this.computed) {
       this.value = undefined;
       this.dep = new Dep();
@@ -611,6 +670,8 @@ export default class Watcher {
       // It initializes as lazy by default, and only becomes activated when
       // it is depended on by at least one subscriber, which is typically
       // another computed property or a component's render function.
+      // computed watcher默认为lazy模式
+      // 没有人订阅这个computed watcher的变化, 把dirty设置为true, 下次访问这个计算属性才会重新求值, 本质上是一种优化
       if (this.dep.subs.length === 0) {
         // In lazy mode, we don't want to perform computations until necessary,
         // so we simply mark the watcher as dirty. The actual computation is
@@ -620,6 +681,7 @@ export default class Watcher {
       } else {
         // In activated mode, we want to proactively perform the computation
         // but only notify our subscribers when the value has indeed changed.
+        // 当computed计算属性的值真正发生变化时才进行notify
         this.getAndInvoke(() => {
           this.dep.notify();
         });
@@ -665,6 +727,28 @@ export default class Watcher {
         cb.call(this.vm, value, oldValue);
       }
     }
+  }
+
+  /**
+   * Depend on this watcher. Only for computed property watchers.
+   */
+  depend() {
+    // 依赖收集, computed watcher才持有dep
+    if (this.dep && Dep.target) {
+      this.dep.depend();
+    }
+  }
+
+  /**
+   * Evaluate and return the value of the watcher.
+   * This only gets called for computed property watchers.
+   */
+  evaluate() {
+    if (this.dirty) {
+      this.value = this.get();
+      this.dirty = false;
+    }
+    return this.value;
   }
 }
 
