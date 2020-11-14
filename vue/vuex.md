@@ -12,6 +12,10 @@
 <img src="https://github.com/tzstone/MarkdownPhotos/blob/master/vuex.png" width=700
  height=550 align=center />
 
+## 流程梳理
+
+Vuex 本质上是创建了一个全局唯一的 Vue 实例, 将传入模块的 state 和 getters 分别作为这个 vm 实例的 data 和 computed 属性, 从而实现响应式更新, 并通过 mutation 和 actions 实现对 state 的规范化修改.
+
 ## 使用方法
 
 ```javascript
@@ -38,7 +42,7 @@ new Vue({
 });
 ```
 
-## 看看源码做了什么
+## 源码解读
 
 ```javascript
 // vuex.js v3.0.1
@@ -406,5 +410,6 @@ function resetStoreVM(store, state, hot) {
 }
 ```
 
-参考资料:  
+参考资料:
+
 [Vuex 状态管理](https://ustbhuangyi.github.io/vue-analysis/v2/vuex/#%E4%BB%80%E4%B9%88%E6%98%AF-%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%E6%A8%A1%E5%BC%8F-%EF%BC%9F)
