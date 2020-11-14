@@ -20,7 +20,7 @@ new Watch 的时候调用 this.get()方法, 将当前 watcher 赋值给全局的
 
 当响应式对象被修改时, 触发对象的 set 方法(在 defineReactive 中定义), 调用 dep.notify()方法, 遍历执行 dep 收集的各个 watcher 的 update()方法, update()将当前 watcher 推入一个队列(queue)中, 在 nextTick 回调中执行各个 watcher 的 run()方法(即`nextTick(flushSchedulerQueue)`).
 
-run()方法会先通过 this.get()获取当前值, 并与旧值做对比, 满足条件时执行 watcher 的回调函数(cb). 只有 watch 类型的 watcher 才有 cb 回调, 其他两个类型的 cb 都为 noop.
+run()方法会先通过 this.get()获取当前值(同时会触发`依赖的重新收集`, 同上一步的依赖收集), 并与旧值做对比, 满足条件时执行 watcher 的回调函数(cb). 只有 watch 类型的 watcher 才有 cb 回调, 其他两个类型的 cb 都为 noop.
 
 对于 computed 类型 watcher 和对于渲染 watcher, 在 run()方法中执行 this.get()方法时, 会执行 this.getter()方法(同上述的依赖收集阶段). 对于 computed 类型 watcher, 会进行 computed[key]的重新计算; 对于渲染 watcher, 会执行 updateComponent 方法, 从而实现组件重新渲染.
 
@@ -569,7 +569,7 @@ export default class Watcher {
     this.active = true;
     this.dirty = this.computed; // for computed watchers
     this.deps = []; // watch持有的Dep实例数组
-    this.newDeps = [];
+    this.newDeps = []; // 新添加的Dep实例数组, 在重新收集依赖时进行新旧Dep实例对比, 清除无效订阅
     this.depIds = new Set();
     this.newDepIds = new Set();
     this.expression = process.env.NODE_ENV !== 'production' ? expOrFn.toString() : '';
@@ -596,6 +596,8 @@ export default class Watcher {
   /**
    * Evaluate the getter, and re-collect dependencies.
    */
+  // 计算getter, 并重新收集依赖
+  // 比如当有notify通知渲染函数去更新的时候, watcher.run()会调用到get(), 重新收集依赖
   get() {
     // 将当前watch赋值给Dep.target
     pushTarget(this);
