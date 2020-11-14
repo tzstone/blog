@@ -18,11 +18,21 @@ new Watch 的时候调用 this.get()方法, 将当前 watcher 赋值给全局的
 
 ### 更新派发
 
-当响应式对象被修改时, 触发对象的 set 方法(在 defineReactive 中定义), 调用 dep.notify()方法, 遍历执行 dep 收集的各个 watcher 的 update()方法, update()将当前 watcher 推入一个队列中, 在下一次 nextTick 中执行各个 watcher 的 run()方法(flushSchedulerQueue 方法).
+当响应式对象被修改时, 触发对象的 set 方法(在 defineReactive 中定义), 调用 dep.notify()方法, 遍历执行 dep 收集的各个 watcher 的 update()方法, update()将当前 watcher 推入一个队列(queue)中, 在 nextTick 回调中执行各个 watcher 的 run()方法(即`nextTick(flushSchedulerQueue)`).
 
 run()方法会先通过 this.get()获取当前值, 并与旧值做对比, 满足条件时执行 watcher 的回调函数(cb). 只有 watch 类型的 watcher 才有 cb 回调, 其他两个类型的 cb 都为 noop.
 
 对于 computed 类型 watcher 和对于渲染 watcher, 在 run()方法中执行 this.get()方法时, 会执行 this.getter()方法(同上述的依赖收集阶段). 对于 computed 类型 watcher, 会进行 computed[key]的重新计算; 对于渲染 watcher, 会执行 updateComponent 方法, 从而实现组件重新渲染.
+
+flushSchedulerQueue 方法中有几个注意要点:
+
+- 队列排序: `queue.sort((a, b) => a.id - b.id)`, 按 watcher 的 id 从小到大排列, 这样做主要是为了:
+
+  - 组件的更新由父到子, 因为父组件的创建先于子组件, watcher 的创建也是先父后子(创建过程中 id 是递增的, 所以父 watcher 的 id 比子 watcher 的 id 小), 执行顺序也是先父后子
+  - 用户自定义 watcher 先于渲染 watcher 执行, 因为用户自定义 watcher (`initState()` 中创建)是在渲染 watcher (`$mount()` 中创建)之前创建的
+  - 如果一个组件在父组件的 watcher 执行期间被销毁, 那么它对应的 watcher 都可以跳过不执行, 所以父组件的 watcher 应该先执行
+
+- 队列遍历: `for (index = 0; index < queue.length; index++)`. 遍历队列的时候每次都去计算 queue 的长度, 因为在 `watcher.run()` 的时候, 用户可能会再次添加新的 watcher(详见 `queueWatcher`).
 
 ## 源码解读
 
