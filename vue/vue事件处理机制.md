@@ -16,7 +16,7 @@
 
 ```html
 <div id="app">
-  <button @click.stop='handleClick'>click me</button>
+  <button @click.stop="handleClick">click me</button>
 </div>
 <script src="./vue.js"></script>
 <script>
@@ -24,10 +24,10 @@
     el: '#app',
     methods: {
       handleClick() {
-        console.log('click button')
-      }
-    }
-  })
+        console.log('click button');
+      },
+    },
+  });
 </script>
 ```
 
@@ -48,10 +48,7 @@
 部分源代码如下:
 
 ```javascript
-var createCompiler = createCompilerCreator(function baseCompile(
-  template,
-  options
-) {
+var createCompiler = createCompilerCreator(function baseCompile(template, options) {
   var ast = parse(template.trim(), options); // 解析模板, 得到抽象语法树ast
   if (options.optimize !== false) {
     optimize(ast, options);
@@ -60,7 +57,7 @@ var createCompiler = createCompilerCreator(function baseCompile(
   return {
     ast: ast,
     render: code.render,
-    staticRenderFns: code.staticRenderFns
+    staticRenderFns: code.staticRenderFns,
   };
 });
 
@@ -68,8 +65,8 @@ function generate(ast, options) {
   var state = new CodegenState(options);
   var code = ast ? genElement(ast, state) : '_c("div")'; // 得到上述的`code`
   return {
-    render: "with(this){return " + code + "}", // 返回render函数
-    staticRenderFns: state.staticRenderFns
+    render: 'with(this){return ' + code + '}', // 返回render函数
+    staticRenderFns: state.staticRenderFns,
   };
 }
 
@@ -83,13 +80,7 @@ function genElement(el, state) {
     var data = el.plain ? undefined : genData$2(el, state);
 
     var children = el.inlineTemplate ? null : genChildren(el, state, true);
-    code =
-      "_c('" +
-      el.tag +
-      "'" +
-      (data ? "," + data : "") +
-      (children ? "," + children : "") +
-      ")";
+    code = "_c('" + el.tag + "'" + (data ? ',' + data : '') + (children ? ',' + children : '') + ')';
   }
   // module transforms
   for (var i = 0; i < state.transforms.length; i++) {
@@ -99,7 +90,7 @@ function genElement(el, state) {
 }
 
 function genData$2(el, state) {
-  var data = "{";
+  var data = '{';
   // ...
   // 本例中, 模板解析后的ast中button的events属性已经有值
   /*
@@ -112,10 +103,10 @@ function genData$2(el, state) {
   */
   // event handlers
   if (el.events) {
-    data += genHandlers(el.events, false, state.warn) + ",";
+    data += genHandlers(el.events, false, state.warn) + ',';
   }
   if (el.nativeEvents) {
-    data += genHandlers(el.nativeEvents, true, state.warn) + ",";
+    data += genHandlers(el.nativeEvents, true, state.warn) + ',';
   }
   // ...
   // v-bind data wrap
@@ -130,27 +121,27 @@ function genData$2(el, state) {
 }
 
 function genHandlers(events, isNative, warn) {
-  var res = isNative ? "nativeOn:{" : "on:{";
+  var res = isNative ? 'nativeOn:{' : 'on:{';
   for (var name in events) {
-    res += '"' + name + '":' + genHandler(name, events[name]) + ",";
+    res += '"' + name + '":' + genHandler(name, events[name]) + ',';
   }
-  return res.slice(0, -1) + "}";
+  return res.slice(0, -1) + '}';
 }
 
 function genHandler(name, handler) {
   if (!handler) {
-    return "function(){}";
+    return 'function(){}';
   }
 
   if (Array.isArray(handler)) {
     return (
-      "[" +
+      '[' +
       handler
-        .map(function(handler) {
+        .map(function (handler) {
           return genHandler(name, handler);
         })
-        .join(",") +
-      "]"
+        .join(',') +
+      ']'
     );
   }
 
@@ -163,10 +154,10 @@ function genHandler(name, handler) {
       return handler.value;
     }
     /* istanbul ignore if */
-    return "function($event){" + handler.value + "}"; // inline statement
+    return 'function($event){' + handler.value + '}'; // inline statement
   } else {
-    var code = "";
-    var genModifierCode = "";
+    var code = '';
+    var genModifierCode = '';
     var keys = [];
     for (var key in handler.modifiers) {
       // 处理修饰符, 将修饰符对应的代码片段添加到handler,
@@ -178,17 +169,17 @@ function genHandler(name, handler) {
           // 键盘处理
           keys.push(key);
         }
-      } else if (key === "exact") {
+      } else if (key === 'exact') {
         var modifiers = handler.modifiers;
         genModifierCode += genGuard(
-          ["ctrl", "shift", "alt", "meta"]
-            .filter(function(keyModifier) {
+          ['ctrl', 'shift', 'alt', 'meta']
+            .filter(function (keyModifier) {
               return !modifiers[keyModifier];
             })
-            .map(function(keyModifier) {
-              return "$event." + keyModifier + "Key";
+            .map(function (keyModifier) {
+              return '$event.' + keyModifier + 'Key';
             })
-            .join("||")
+            .join('||'),
         );
       } else {
         keys.push(key);
@@ -202,13 +193,13 @@ function genHandler(name, handler) {
       code += genModifierCode;
     }
     var handlerCode = isMethodPath
-      ? handler.value + "($event)" // 传递$event参数
+      ? handler.value + '($event)' // 传递$event参数
       : isFunctionExpression
-        ? "(" + handler.value + ")($event)"
-        : handler.value;
+      ? '(' + handler.value + ')($event)'
+      : handler.value;
     /* istanbul ignore if */
     // 返回一个新的回调函数, 将修饰符对应的代码片段添加到原回调函数之前执行
-    return "function($event){" + code + handlerCode + "}";
+    return 'function($event){' + code + handlerCode + '}';
   }
 }
 ```
@@ -227,11 +218,7 @@ function add$1(event, handler, once$$1, capture, passive) {
   if (once$$1) {
     handler = createOnceHandler(handler, event, capture);
   }
-  target$1.addEventListener(
-    event,
-    handler,
-    supportsPassive ? { capture: capture, passive: passive } : capture
-  );
+  target$1.addEventListener(event, handler, supportsPassive ? { capture: capture, passive: passive } : capture);
 }
 
 /**
@@ -241,7 +228,7 @@ function add$1(event, handler, once$$1, capture, passive) {
 function withMacroTask(fn) {
   return (
     fn._withTask ||
-    (fn._withTask = function() {
+    (fn._withTask = function () {
       useMacroTask = true;
       var res = fn.apply(null, arguments);
       useMacroTask = false;
@@ -261,8 +248,7 @@ function withMacroTask(fn) {
 
 ```html
 <div id="app">
-  <my-component @click.native="nativeclick" @receive="receive">
-  </my-component>
+  <my-component @click.native="nativeclick" @receive="receive"> </my-component>
 </div>
 <script src="./vue.js"></script>
 <script>
@@ -271,21 +257,21 @@ function withMacroTask(fn) {
     template: '<div>component. <div @click.stop="send">click me</div></div>',
     methods: {
       send() {
-        this.$emit('receive', 'msg from component')
-      }
-    }
-  })
+        this.$emit('receive', 'msg from component');
+      },
+    },
+  });
   new Vue({
     el: '#app',
     methods: {
       nativeclick() {
-        console.log('nativeclick')
+        console.log('nativeclick');
       },
       receive(msg) {
-        console.log('receive:', msg)
-      }
-    }
-  })
+        console.log('receive:', msg);
+      },
+    },
+  });
 </script>
 ```
 
@@ -380,7 +366,7 @@ function add(event, fn, once) {
 }
 
 // $on和$emit就是典型的订阅/发布模式
-Vue.prototype.$on = function(event, fn) {
+Vue.prototype.$on = function (event, fn) {
   var this$1 = this;
 
   var vm = this;
@@ -399,7 +385,7 @@ Vue.prototype.$on = function(event, fn) {
   return vm;
 };
 
-Vue.prototype.$emit = function(event) {
+Vue.prototype.$emit = function (event) {
   var vm = this;
   // ...
   var cbs = vm._events[event];
@@ -442,4 +428,4 @@ function initInternalComponent(vm, options) {
 
 ## 参考资料
 
-- [vue 源码解析－事件机制](https://segmentfault.com/a/1190000009750348)
+[vue 源码解析－事件机制](https://segmentfault.com/a/1190000009750348)
