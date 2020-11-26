@@ -4,31 +4,29 @@
 
 ```html
 <div id="app">
-  <my-component>
-    i am slot
-  </my-component>
+  <my-component> i am slot </my-component>
 </div>
 <script src="./vue.js"></script>
 <script>
   var Child = {
-    template: '<div>child content</div>'
-  }
+    template: '<div>child content</div>',
+  };
   Vue.component('my-component', {
     name: 'my-component',
     template: '<div><span>{{msg}}</span><Child></Child><slot></slot></div>',
     props: ['msg'],
     components: {
-      Child
-    }
-  })
+      Child,
+    },
+  });
   new Vue({
     el: '#app',
     data() {
       return {
-        msg: 'i am a component'
-      }
-    }
-  })
+        msg: 'i am a component',
+      };
+    },
+  });
 </script>
 ```
 
@@ -39,7 +37,7 @@
 `Vue.component()`方法返回一个 Vue 的子类, 子类以`cid`属性进行区分. 同时该子类会缓存到`Vue.options.components`中.
 
 `Vue.options`截图:
-<img src="https://github.com/tzstone/MarkdownPhotos/blob/master/vue.component.jpeg" align=center />
+<img src="https://github.com/tzstone/MarkdownPhotos/raw/master/vue.component.jpeg" align=center />
 
 ```javascript
 // 全局注册vue.component, vue.directive, vue.filter三个方法
@@ -48,17 +46,17 @@ function initAssetRegisters(Vue) {
    * Create asset registration methods.
    */
   // ASSET_TYPES = ["component", "directive", "filter"]
-  ASSET_TYPES.forEach(function(type) {
-    Vue[type] = function(id, definition) {
+  ASSET_TYPES.forEach(function (type) {
+    Vue[type] = function (id, definition) {
       // 如果是创建component, 调用this.options._base.extend(即Vue.extend)方法
       // 返回一个Vue的子类
-      if (type === "component" && isPlainObject(definition)) {
+      if (type === 'component' && isPlainObject(definition)) {
         definition.name = definition.name || id;
         definition = this.options._base.extend(definition);
       }
       // ...
       // 把extend的子类缓存到Vue.options.components中
-      this.options[type + "s"][id] = definition;
+      this.options[type + 's'][id] = definition;
       return definition;
     };
   });
@@ -76,7 +74,7 @@ function initExtend(Vue) {
   /**
    * Class inheritance
    */
-  Vue.extend = function(extendOptions) {
+  Vue.extend = function (extendOptions) {
     extendOptions = extendOptions || {};
     var Super = this; // Vue
     var SuperId = Super.cid;
@@ -86,7 +84,7 @@ function initExtend(Vue) {
     }
 
     var name = extendOptions.name || Super.options.name;
-    if ("development" !== "production" && name) {
+    if ('development' !== 'production' && name) {
       validateComponentName(name);
     }
 
@@ -98,7 +96,7 @@ function initExtend(Vue) {
     Sub.prototype.constructor = Sub;
     Sub.cid = cid++;
     Sub.options = mergeOptions(Super.options, extendOptions);
-    Sub["super"] = Super;
+    Sub['super'] = Super;
 
     // For props and computed properties, we define the proxy getters on
     // the Vue instances at extension time, on the extended prototype. This
@@ -119,7 +117,7 @@ function initExtend(Vue) {
 
     // create asset registers, so extended classes
     // can have their private assets too.
-    ASSET_TYPES.forEach(function(type) {
+    ASSET_TYPES.forEach(function (type) {
       Sub[type] = Super[type];
     });
     // enable recursive self-lookup
@@ -143,7 +141,7 @@ function initExtend(Vue) {
 function initProps$1(Comp) {
   var props = Comp.options.props;
   for (var key in props) {
-    proxy(Comp.prototype, "_props", key);
+    proxy(Comp.prototype, '_props', key);
   }
 }
 
@@ -158,16 +156,16 @@ function proxy(target, sourceKey, key) {
 }
 
 function initMixin(Vue) {
-  Vue.prototype._init = function(options) {
+  Vue.prototype._init = function (options) {
     var vm = this;
     // a uid
     vm._uid = uid$1++;
 
     var startTag, endTag;
     /* istanbul ignore if */
-    if ("development" !== "production" && config.performance && mark) {
-      startTag = "vue-perf-start:" + vm._uid;
-      endTag = "vue-perf-end:" + vm._uid;
+    if ('development' !== 'production' && config.performance && mark) {
+      startTag = 'vue-perf-start:' + vm._uid;
+      endTag = 'vue-perf-end:' + vm._uid;
       mark(startTag);
     }
 
@@ -180,11 +178,7 @@ function initMixin(Vue) {
       // internal component options needs special treatment.
       initInternalComponent(vm, options);
     } else {
-      vm.$options = mergeOptions(
-        resolveConstructorOptions(vm.constructor),
-        options || {},
-        vm
-      );
+      vm.$options = mergeOptions(resolveConstructorOptions(vm.constructor), options || {}, vm);
     }
     /* istanbul ignore else */
     {
@@ -195,17 +189,17 @@ function initMixin(Vue) {
     initLifecycle(vm);
     initEvents(vm);
     initRender(vm);
-    callHook(vm, "beforeCreate");
+    callHook(vm, 'beforeCreate');
     initInjections(vm); // resolve injections before data/props
     initState(vm);
     initProvide(vm); // resolve provide after data/props
-    callHook(vm, "created");
+    callHook(vm, 'created');
 
     /* istanbul ignore if */
-    if ("development" !== "production" && config.performance && mark) {
+    if ('development' !== 'production' && config.performance && mark) {
       vm._name = formatComponentName(vm, false);
       mark(endTag);
-      measure("vue " + vm._name + " init", startTag, endTag);
+      measure('vue ' + vm._name + ' init', startTag, endTag);
     }
 
     if (vm.$options.el) {
@@ -238,7 +232,7 @@ function initRender(vm) {
   // so that we get proper render context inside it.
   // args order: tag, data, children, normalizationType, alwaysNormalize
   // internal version is used by render functions compiled from templates
-  vm._c = function(a, b, c, d) {
+  vm._c = function (a, b, c, d) {
     return createElement(vm, a, b, c, d, false);
   };
   // ...
@@ -246,14 +240,7 @@ function initRender(vm) {
 
 // wrapper function for providing a more flexible interface
 // without getting yelled at by flow
-function createElement(
-  context,
-  tag,
-  data,
-  children,
-  normalizationType,
-  alwaysNormalize
-) {
+function createElement(context, tag, data, children, normalizationType, alwaysNormalize) {
   if (Array.isArray(data) || isPrimitive(data)) {
     normalizationType = children;
     children = data;
@@ -268,24 +255,15 @@ function createElement(
 function _createElement(context, tag, data, children, normalizationType) {
   // ...
   var vnode, ns;
-  if (typeof tag === "string") {
+  if (typeof tag === 'string') {
     var Ctor;
     ns = (context.$vnode && context.$vnode.ns) || config.getTagNamespace(tag);
 
     // 判断是否是html/svg保留标签
     if (config.isReservedTag(tag)) {
       // platform built-in elements
-      vnode = new VNode(
-        config.parsePlatformTagName(tag),
-        data,
-        children,
-        undefined,
-        undefined,
-        context
-      );
-    } else if (
-      isDef((Ctor = resolveAsset(context.$options, "components", tag)))
-    ) {
+      vnode = new VNode(config.parsePlatformTagName(tag), data, children, undefined, undefined, context);
+    } else if (isDef((Ctor = resolveAsset(context.$options, 'components', tag)))) {
       // component
       // 如果是组件, 调用createComponent返回一个vnode
       vnode = createComponent(Ctor, data, context, children, tag);

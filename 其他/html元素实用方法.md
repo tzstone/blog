@@ -5,16 +5,16 @@
   原生的 table 元素有很便捷的创建方法:
 
   ```javascript
-  const tableEl = document.querySelector("table");
+  const tableEl = document.querySelector('table');
   const headRow = tableEl.createTHead().insertRow();
-  headRow.insertCell().textContent = "Make";
-  headRow.insertCell().textContent = "Model";
-  headRow.insertCell().textContent = "Color";
+  headRow.insertCell().textContent = 'Make';
+  headRow.insertCell().textContent = 'Model';
+  headRow.insertCell().textContent = 'Color';
 
   const newRow = tableEl.insertRow();
-  newRow.insertCell().textContent = "Yes";
-  newRow.insertCell().textContent = "No";
-  newRow.insertCell().textContent = "Thank you";
+  newRow.insertCell().textContent = 'Yes';
+  newRow.insertCell().textContent = 'No';
+  newRow.insertCell().textContent = 'Thank you';
   ```
 
 - el.scrollIntoView(Boolean | Object)
@@ -63,9 +63,9 @@
 
   注意: 该方法会引起重绘
 
-  <img src="https://github.com/tzstone/MarkdownPhotos/blob/master/getBoundingClientRect.gif" height=250 align=center />
+  <img src="https://github.com/tzstone/MarkdownPhotos/raw/master/getBoundingClientRect.gif" height=250 align=center />
 
-  <img src="https://github.com/tzstone/MarkdownPhotos/blob/master/getBoundingClientRect-scroll.gif" height=250 align=center />
+  <img src="https://github.com/tzstone/MarkdownPhotos/raw/master/getBoundingClientRect-scroll.gif" height=250 align=center />
 
 - el.matches(selectorString)
 
@@ -76,8 +76,8 @@
     <div class="box"></div>
   </div>
   <script>
-    document.querySelector('.box').matches('.wrap .box') // true
-    document.querySelector('.box').matches('.box') // true
+    document.querySelector('.box').matches('.wrap .box'); // true
+    document.querySelector('.box').matches('.box'); // true
   </script>
   ```
 
@@ -119,7 +119,7 @@
   element-ui 里 clickoutside 的自定义指令有类似用法:
 
   ```javascript
-  const handler = function(e) {
+  const handler = function (e) {
     if (!el.contains(e.target)) {
       // ...
     }

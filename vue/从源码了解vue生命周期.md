@@ -2,7 +2,7 @@
 
 本文主要从源码了解`beforeCreate`, `created`, `beforeMount`, `mounted`四个生命周期阶段, 基于 vue2.5.16.  
 先贴一个自己画的图:  
-<img src="https://github.com/tzstone/MarkdownPhotos/blob/master/vue%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.jpg" width=500
+<img src="https://github.com/tzstone/MarkdownPhotos/raw/master/vue%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.jpg" width=500
  height=1000 align=center />
 
 ## `beforeCreate`和`created`

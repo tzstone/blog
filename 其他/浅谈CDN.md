@@ -16,7 +16,7 @@ CDN, 全称内容分发网络(Content delivery network), 是指一种通过互�
 
 网站没有接入 CDN 时, 用户通过浏览器访问网站的过程如下:
 
-<img src="https://github.com/tzstone/MarkdownPhotos/blob/master/no-cdn-detail.jpg" align=center>
+<img src="https://github.com/tzstone/MarkdownPhotos/raw/master/no-cdn-detail.jpg" align=center>
 
 具体过程为:
 
@@ -38,7 +38,7 @@ CDN 网络是在用户和服务器之间增加 Cache 层, 通过接管 DNS, 将�
 
 加入 CDN 后, 用户访问网站的过程如下:
 
-<img src="https://github.com/tzstone/MarkdownPhotos/blob/master/use-cdn-detail.jpg" align=center>
+<img src="https://github.com/tzstone/MarkdownPhotos/raw/master/use-cdn-detail.jpg" align=center>
 
 具体过程为:
 

@@ -38,7 +38,7 @@
 `$mount -> compileToFunctions -> compile -> baseCompile -> var ast = parse(template.trim(), options) -> var code = generate(ast, options) -> genElement -> genData$2 -> genHandler`
 
 其中`ast`是将模板解析后得到的抽象语法树:
-<img src="https://github.com/tzstone/MarkdownPhotos/blob/master/vue%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6-ast.jpeg" align=center />
+<img src="https://github.com/tzstone/MarkdownPhotos/raw/master/vue%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6-ast.jpeg" align=center />
 可以看到`ast`已经将`button`绑定的 click 事件解析到`events`对象中了. 由此, 对模板中的绑定事件进行识别已经完成了.
 
 但由于 vue 提供了各种各样的事件/按键修饰符, 所以我们还必须对事件回调函数进行一些特殊处理.这里主要是调用了`genHandler`, 处理完之后, 最终得到的渲染代码`code`(`genElement`方法返回的结果)为:
@@ -281,7 +281,7 @@ function withMacroTask(fn) {
 
 得到的`ast`语法树如下:
 
-<img src="https://github.com/tzstone/MarkdownPhotos/blob/master/vue%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6-%E7%BB%84%E4%BB%B6ast.jpg" align=center />
+<img src="https://github.com/tzstone/MarkdownPhotos/raw/master/vue%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6-%E7%BB%84%E4%BB%B6ast.jpg" align=center />
 
 可以看到组件监听的原生 click 事件被解析到`nativeEvents`对象中, 而自定义的`receive`事件则被解析到`events`对象中了.
 
