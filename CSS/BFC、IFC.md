@@ -6,6 +6,16 @@
 
 普通流中的框(boxes)属于某一个格式化上下文，它可以是块(block)的或内联(inline)的，但不能同时出现。块级(block-level)框参与块格式化上下文(block formatting context, BFC)。内联级(inline-level)框参与内联格式化上下文(inline formatting context, IFC)。
 
+以下排版过程来着"重学前端"课程:
+
+### 排版过程: 格式化上下文(formatting context) + 框(boxes)/文字(charater) = 位置(positions)
+
+当我们要把正常流中的一个框或者文字排版, 需要分成三种情况处理:
+
+1. 当遇到块级框: 排入块级格式化上下文
+2. 当遇到内联级框或者文字: 首先尝试排入内联级格式化上下文, 如果排不下, 那么创建一个行框, 先将行框排版(行框是块级, 所以到第一种情况), 行框会创建一个内联级格式化上下文
+3. 遇到 float 框: 把框的顶部跟当前内联级格式化上下文上边缘对齐, 然后根据 float 的方向把框的对应边缘对到块级格式化上下文的边缘, 之后重排当前行框
+
 ### 块级元素([block-level elements](https://www.w3.org/TR/CSS2/visuren.html#block-level))
 
 `块级元素`是源文档中可视格式为块（例如段落）的那些元素。 display 属性的以下值使元素具有块级：`block`，`list-item` 和 `table`。
