@@ -6,7 +6,7 @@
 
 普通流中的框(boxes)属于某一个格式化上下文，它可以是块(block)的或内联(inline)的，但不能同时出现。块级(block-level)框参与块格式化上下文(block formatting context, BFC)。内联级(inline-level)框参与内联格式化上下文(inline formatting context, IFC)。
 
-以下排版过程来着"重学前端"课程:
+以下排版过程来自"重学前端"课程:
 
 ### 排版过程: 格式化上下文(formatting context) + 框(boxes)/文字(charater) = 位置(positions)
 
