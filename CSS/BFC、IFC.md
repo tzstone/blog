@@ -82,7 +82,6 @@
 - 阻止外边距折叠(margin collapsing)
 
   - 创建了 BFC 的元素不会和它的普通流子元素发生外边距叠加(BFC 会将任何内容包含其中, 包括普通流子元素的边距)
-
   - 避免特殊情况下元素自身的 margin 重叠(下面外边距折叠发生情况的第 3 点的第 4 小点)
 
 ### [外边距折叠](https://www.w3.org/TR/CSS2/box.html#collapsing-margins)
