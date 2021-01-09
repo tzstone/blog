@@ -10,19 +10,19 @@
 
 ### 依赖收集
 
-new Watch 的时候调用 this.get()方法, 将当前 watcher 赋值给全局的 Dep.target, 然后调用 watcher 的 getter 方法(由 new Watcher 时传入的 expOrFn 经过封装得来).
+new Watch 的时候调用 this.get()方法, 将当前 watcher 赋值给`全局的 Dep.target`, 然后调用 watcher 的 getter 方法(由 new Watcher 时传入的 expOrFn 经过封装得来).
 
-对于 watch 类型, expOrFn 为 watch 的 key, 调用 getter 即对 key 进行访问(如'a.b.c'); 对于渲染 watcher, expOrFn 为渲染函数; 对于 computed 类型, expOrFn 为 computed[key]对应的执行函数.
+对于 `watch 类型`, expOrFn 为 watch 的 key, 调用 getter 即对 key 进行访问(如'a.b.c'); 对于`渲染 watcher`, expOrFn 为渲染函数; 对于 `computed 类型`, expOrFn 为 computed[key]对应的执行函数.
 
-对于这三种类型, 执行 getter 方法都会触发对其所依赖的对象的访问(直接的对象访问或者执行函数中对对象的访问), 进入对象的 get 函数(在 defineReactive 中定义), 在 get 函数中获取到当前的 watcher 对象(Dep.target), 将其加入对象持有的依赖管理器 dep 中, 而后将 Dep.target 恢复到上一个状态, 完成依赖收集.
+对于这三种类型, 执行 getter 方法都会触发对其所依赖的对象的访问(`直接的对象访问`或者`执行函数中对对象的访问`), 进入对象的 get 函数(在 defineReactive 中定义), 在 `get` 函数中获取到当前的 watcher 对象(Dep.target), 将其加入对象持有的`依赖管理器 dep` 中, 而后将 Dep.target 恢复到上一个状态, 完成依赖收集.
 
 ### 更新派发
 
-当响应式对象被修改时, 触发对象的 set 方法(在 defineReactive 中定义), 调用 dep.notify()方法, 遍历执行 dep 收集的各个 watcher 的 update()方法, update()将当前 watcher 推入一个队列(queue)中, 在 nextTick 回调中执行各个 watcher 的 run()方法(即`nextTick(flushSchedulerQueue)`).
+当响应式对象被修改时, 触发对象的 set 方法(在 defineReactive 中定义), 调用 dep.notify()方法, 遍历执行 dep 收集的各个 watcher 的 `update()`方法, update()将当前 watcher 推入一个队列(queue)中, 在 nextTick 回调中执行各个 watcher 的 run()方法(即`nextTick(flushSchedulerQueue)`).
 
 run()方法会先通过 this.get()获取当前值(同时会触发`依赖的重新收集`, 同上一步的依赖收集), 并与旧值做对比, 满足条件时执行 watcher 的回调函数(cb). 只有 watch 类型的 watcher 才有 cb 回调, 其他两个类型的 cb 都为 noop.
 
-对于 computed 类型 watcher 和对于渲染 watcher, 在 run()方法中执行 this.get()方法时, 会执行 this.getter()方法(同上述的依赖收集阶段). 对于 computed 类型 watcher, 会进行 computed[key]的重新计算; 对于渲染 watcher, 会执行 updateComponent 方法, 从而实现组件重新渲染.
+对于 `computed 类型 watcher` 和对于`渲染 watcher`, 在 run()方法中执行 this.get()方法时, 会执行 this.getter()方法(同上述的依赖收集阶段). 对于 computed 类型 watcher, 会进行 computed[key]的重新计算; 对于渲染 watcher, 会执行 updateComponent 方法, 从而实现组件重新渲染.
 
 flushSchedulerQueue 方法中有几个注意要点:
 
