@@ -4,7 +4,7 @@
 
 在浏览器中, 真正的 DOM 元素是非常复杂庞大的，当我们频繁的去做 DOM 更新时，会产生一定的性能问题。
 
-而 Virtual DOM 就是用一个原生的 `JS 对象`去描述一个 DOM 节点，所以它比创建一个 DOM 的代价要小很多。在 Vue.js 中，Virtual DOM 是用 VNode 这么一个 Class 去描述的。Vue.js 中 Virtual DOM 是借鉴了开源库 [snabbdom](https://github.com/snabbdom/snabbdom) 的实现。
+而 Virtual DOM 就是用一个原生的 `JS 对象`去描述一个 DOM 节点，所以它比创建一个 DOM 的代价要小很多。在 Vue.js 中，Virtual DOM 是用 VNode 这么一个 Class 去描述的。
 
 VNode 是对真实 DOM 的一种`抽象描述`，它的核心定义无非就几个关键属性，标签名、数据、子节点、键值等，其它属性都是用来扩展 VNode 的灵活性以及实现一些特殊 feature 的。由于 VNode 只是用来映射到真实 DOM 的渲染，不需要包含操作 DOM 的方法，因此它是非常`轻量`和`简单`的。
 
@@ -96,7 +96,7 @@ patch 方法有两个调用时机:
 
 在 Vue 中, 数据更新本质上是重新渲染了整个视图(重新执行渲染函数), 然后用新的视图替换掉旧的视图, 但通过 vnode 的 diff 运算来避免整个 DOM 树的变更, 而是只更新发生变化的节点。
 
-Vue 的 diff 算法是基于 snabbdom 改造过来的，仅在`同级`的 vnode 间做 diff，递归地进行同级 vnode 的 diff，最终实现整个 DOM 树的更新。diff 算法有以下步骤:
+Vue 的 diff 算法是基于 [snabbdom](https://github.com/snabbdom/snabbdom) 改造过来的，仅在`同级`的 vnode 间做 diff，递归地进行同级 vnode 的 diff，最终实现整个 DOM 树的更新。diff 算法有以下步骤:
 
 1. 调用 sameVnode 方法判断是不是相同的 vnode
 2. 如果新旧 vnode 相同, 则调用 patchVNode 方法, 把新的 vnode patch 到旧的 vnode 上
