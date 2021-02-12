@@ -1,13 +1,13 @@
 # [译]JavaScript: 核心 - 第二版
 
-> 原文地址：[JavaScript. The Core: 2nd Edition](https://link.zhihu.com/?target=http%3A//dmitrysoshnikov.com/ecmascript/javascript-the-core-2nd-edition/)<br/>
+> 原文地址：[JavaScript. The Core: 2nd Edition](http://dmitrysoshnikov.com/ecmascript/javascript-the-core-2nd-edition/)<br/>
 > 作者: Dmitry Soshnikov
 
 这是[JavaScript：核心]概述讲稿的第二版。核心概述讲座，专门介绍 ECMAScript 编程语言及其运行时系统的核心组件。
 
 目标人群：有经验的程序员、专家。
 
-本文的[第一版](https://link.zhihu.com/?target=http%3A//dmitrysoshnikov.com/ecmascript/javascript-the-core/)涵盖了 JS 语言的通用方面，主要讲解了旧式 ES3 规范中的概念，并引用了一些 ES5 和 ES6(又名 ES2015)中的更新。
+本文的[第一版](http://dmitrysoshnikov.com/ecmascript/javascript-the-core/)涵盖了 JS 语言的通用方面，主要讲解了旧式 ES3 规范中的概念，并引用了一些 ES5 和 ES6(又名 ES2015)中的更新。
 
 从 ES2015 开始，该规范改变了部分核心组件的描述和结构，引入了新的模型等。在这个版本中，我们会关注这些新的概念和术语，但是依然保留在规范各个版本中保持一致的最基本的 JS 结构。
 
@@ -337,7 +337,7 @@ foo(30); // 150
 
 环境记录根据类型而有所不同。有`对象(object)环境记录` 和 `声明式(declarative)环境记录`。在声明性式记录之上还有`函数环境记录` 和 `模块(module)环境记录`。每一种记录类型都有其特定的属性。然而，标识符解析的通用机制在所有环境中都是通用的，并且不依赖于记录的类型。
 
-对象环境记录的一个例子是全局环境的记录。这样的记录也有关联的`绑定对象(binding object)`，它可以存储来自该记录的一些属性，但不存储来自其它记录的属性，反之亦然。绑定对象也可以被提供为 `this` 值。
+对象环境记录的一个例子是全局环境记录。这样的记录也有关联的`绑定对象(binding object)`，它可以存储来自该记录的一些属性，但不存储来自其它记录的属性，反之亦然。全局环境记录的绑定对象也可以被提供为 `this` 值。
 
 ```javascript
 // Legacy variables using `var`.
@@ -804,7 +804,3 @@ onmessage = (message) => {
 感谢 TC-39 的代表和规范的编辑帮助澄清本文。有关讨论可以在[这个推特跟帖](https://twitter.com/DmitrySoshnikov/status/930507793047592960)中找到。
 
 祝学习 ECMAScript 顺利！
-
-Written by: Dmitry Soshnikov
-
-Published on: November 14th, 2017
