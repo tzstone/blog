@@ -407,7 +407,7 @@ bar(); // still 20
 
 这里同样是上面提到的情况，函数声明(在本例中被提升到顶部, 声明提升)将 VariableEnvironment 组件保存为它的[[Scope]]，而函数表达式保存 with 执行时被替换后的 LexicalEnvironment 组件，即 with 创建的环境。
 
-注意: 由于 ES6 规范了块级函数声明，在上面的例子中函数 foo 也捕获了创建时所在的词法环境(即 with 创建的环境), 输出 20。
+注意: 由于 ES6 规范了`块级函数声明`，在上面的例子中函数 foo 也捕获了创建时所在的词法环境(即 with 创建的词法环境), 输出 20。
 
 在 `ES6` 中，`LexicalEnvironment` 和 `VariableEnvironment` 的一个区别在于前者用于存储`函数声明和变量(let 和 const)`绑定，而后者仅用于存储`变量(var)`绑定。
 
