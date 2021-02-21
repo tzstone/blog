@@ -1,5 +1,16 @@
 # nextTick
 
+vue 官网上的定义为: 在下次 DOM 更新循环结束之后执行延迟回调。在修改数据之后立即使用这个方法，获取更新后的 DOM。
+
+```javascript
+// 修改数据
+vm.msg = 'Hello';
+// DOM 还没有更新
+Vue.nextTick(function () {
+  // DOM 更新了
+});
+```
+
 ## JS 运行机制
 
 JS 执行是单线程的，它是基于事件循环的。事件循环大致分为以下几个步骤：
