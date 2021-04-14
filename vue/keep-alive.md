@@ -1,0 +1,1 @@
+    return pattern.test(name);
