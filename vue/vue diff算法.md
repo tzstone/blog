@@ -274,9 +274,11 @@ function addVnodes (parentElm, refElm, vnodes, startIdx, endIdx, insertedVnodeQu
 3. `else if (sameVnode(oldStartVnode, newEndVnode))`: 旧首节点和新尾节点是否值得对比, 即是否是将旧首节点移到尾部, 假设startIdx遍历到1:
    
   ![diff](https://github.com/tzstone/MarkdownPhotos/raw/master/vue-diff-move-end.png)
+  
 4. `else if (sameVnode(oldEndVnode, newStartVnode))`: 旧尾节点和新首节点是否值得对比, 即是否是将旧尾节点移到首部, 假设startIdx遍历到1:
    
   ![diff](https://github.com/tzstone/MarkdownPhotos/raw/master/vue-diff-move-start.png)
+
 5. 如果新首节点设置了key, 则查找旧节点组是否存在相同key的节点; 如果没有设置key, 则遍历旧节点组, 调用`sameVode`方法判断旧节点组中是否存在值得对比的节点
     1. 如果新首节点存在于旧节点组中并且是`sameVode`, 则会移动dom的位置
     2. 否则创建dom, 并插入父节点中
