@@ -84,7 +84,7 @@
 
 > Styling a UI based on a state or condition.
 
-该方式可以实现基于条件选择不同的主题皮肤，并允许用户在客户端`随时切换主题`。非常适合需要客户端样式切换`功能，或者需要对站点某一部分（区域）进行独立样式设置的场景。
+该方式可以实现基于条件选择不同的主题皮肤，并允许用户在客户端`随时切换主题`。非常适合需要客户端样式切换功能，或者需要对站点某一部分（区域）进行独立样式设置的场景。
 
 #### 具体实现
 
@@ -419,6 +419,97 @@ toggleBtn.addEventListener('click', e => {
 
 - 兼容性较差, 不支持ie
 
+### element ui的动态换肤
+
+#### 具体实现
+
+生成一套主题， 将主题配色配置写在js中，在浏览器中用js动态修改style标签覆盖原有的CSS。
+
+1. 准备一套默认theme.css样式
+
+```css
+/* theme.css */
+.title {
+  color: #FF0000
+}
+```
+
+2. 准备主题色配置
+```javascript
+var colors = {
+    red: {
+        themeColor: '#FF0000'
+    },
+    blue: {
+        themeColor: '#0000FF'
+    }
+}
+```
+
+3. 异步获取 theme.css ，将颜色值替换为关键词. 关键字可以确保以后能多次换色
+
+```javascript
+var styles = ''
+axios.get('theme.css').then((resp=> {
+ const colorMap = {
+   '#FF0000': 'themeColor'
+ }
+ styles = resp.data
+ Object.keys(colorMap).forEach(key => {
+   const value = colorMap[key]
+   styles = styles.replace(new RegExp(key, 'ig'), value)
+ })
+}))
+```
+
+style 变为：
+
+```css
+.title {
+  color: theme-color
+}
+```
+
+4. 把关键词再换回刚刚生成的相应的颜色值，并在页面上添加 style 标签
+
+```javascript
+ // console 中执行 writeNewStyle (styles, colors.blue)  即可变色
+ function writeNewStyle (originalStyle, colors) {
+    let oldEl = document.getElementById('temp-style')
+    let cssText = originalStyle
+    // 替换颜色值
+    Object.keys(colors).forEach(key => {
+    cssText = cssText.replace(new RegExp(key, 'ig'), colors[key])
+    })
+    const style = document.createElement('style')
+    style.innerText = cssText
+    style.id = 'temp-style'
+
+    oldEl ? document.head.replaceChild(style, oldEl) : 
+    document.head.appendChild(style)  // 将style写入页面
+}
+```
+
+此时style 变为：
+
+```css
+.title {
+  color: '#0000FF'
+}
+```
+
+#### 优点
+
+- 只需一套CSS文件
+- 换肤不需要延迟等候
+- 可自动适配多种主题色
+
+#### 缺点
+
+- 稍难理解
+- 需准确的css颜色值
+- 可能受限于浏览器性能
+
 ### 主题样式切换
 
 #### 替换css
@@ -524,3 +615,5 @@ $(document).ready(function () {
 [CSS自定义属性怎样实现主题切换？](https://zhuanlan.zhihu.com/p/60975003)
 
 [如何简单实现 CSS 主题的切换](https://blog.p2hp.com/archives/7293)
+
+[一文总结前端换肤换主题](https://www.jianshu.com/p/35e0581629d2)
