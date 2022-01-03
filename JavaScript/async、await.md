@@ -63,7 +63,7 @@ async function foo() {
 }
 // 等价于
 function foo() {
-  return Promise.resolve(1);
+  return Promise.resolve(1).then(() => undefined);
 }
 ```
 
