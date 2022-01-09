@@ -49,13 +49,30 @@ worker.onmessage = (e) => {
 通过代理 window 对象, 限制用户代码对 window 的访问, 不兼容 IE:
 
 ```javascript
+// 以下属性在 with 执行环境不会被直接读取
+var unscopables = {
+  undefined: true,
+  Array: true,
+  Object: true,
+  String: true,
+  Boolean: true,
+  Math: true,
+  Number: true,
+  Symbol: true,
+  parseFloat: true,
+  Float32Array: true,
+};
 var proxy = new Proxy(window, {
-  get: function (target, prop) {
-    return null;
+  get: function (target, prop, receiver) {
+    if (prop === Symbol.unscopables) return unscopables; // https://www.zhihu.com/question/364970876
+    if (prop === "alert") return "alert is not available";
+    return window[prop];
   },
 });
 (function (window, self, globalThis) {
-  console.log(window.alert);
+  with (window) {
+    console.log(alert);
+  }
 }.bind(proxy)(proxy, proxy, proxy));
 ```
 
@@ -64,7 +81,7 @@ var proxy = new Proxy(window, {
 with 语句可以在作用域链的前端添加一个变量对象, 用户编写的 js 代码会先在该变量对象中查找, 其作用类似于 proxy.
 
 ```javascript
-// 重新alert方法
+// 重写 alert 方法
 with ({ alert: null }) {
   // 用户编写的js代码
   alert("test");
