@@ -30,7 +30,12 @@ const worker = new Worker(url);
 // 数据
 const data = [1, 2, 3];
 // 待执行函数体
-const func = `function(data){return data.map(t=> t+10)}`;
+const func = `function(data){
+  // 限制可访问对象
+  with({data: data, navigator: null, XMLHttpRequest: null, setInterval: null, setTimeout: null}) {
+    return data.map(t=> t+10)
+  }
+}`;
 // 主线程向工作线程发送待执行函数及数据
 worker.postMessage({
   args: JSON.stringify([data]), // 数据传递默认使用结构化克隆, 数据量大时用JSON.stringify性能更好
