@@ -42,6 +42,10 @@ worker.onmessage = (e) => {
   // 销毁worker
   worker.terminate();
 };
+// 防止worker中执行了死循环代码
+setTimeout(() => {
+  worker.terminate();
+}, 300);
 ```
 
 ### proxy
