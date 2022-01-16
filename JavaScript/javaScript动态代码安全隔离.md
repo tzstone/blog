@@ -92,7 +92,7 @@ iframe.src = html_src;
 
 ### proxy
 
-通过代理 window 对象, 限制用户代码对 window 的访问, 可结合 with 使用限制对 with 对象的访问.
+通过代理 window 对象, 限制用户代码对 window 的访问, 可结合 with 语句限制对 with 对象的访问.
 
 优点: 同步代码处理比较简单.
 
@@ -128,7 +128,7 @@ var proxy = new Proxy(window, {
 
 ### Object.defineProperty()
 
-类似于 proxy, 可结合 with 使用限制对 with 对象的访问.
+类似于 proxy, 可结合 with 语句限制对 with 对象的访问.
 
 优点: 同步代码处理简单, 兼容性好(IE9).
 
