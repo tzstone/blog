@@ -1,4 +1,4 @@
-# CSS主题切换
+# CSS 主题切换
 
 相信大家对网页的主题样式功能肯定不陌生。对于一些站点，在基础样式上，开发者还会为用户提供多种主题样式以供选择。
 
@@ -9,7 +9,7 @@
 如果你也在产品中遇到了主题样式的相关需求，不妨先看看以下几点建议：
 
 1. 尽可能避免这个功能。因为很多时候这可能只是个伪需求。
-2. KISS原则（Keep It Simple, Stupid!）。尽可能降低其复杂性。
+2. KISS 原则（Keep It Simple, Stupid!）。尽可能降低其复杂性。
 3. 尽量只去改变外观，而不要改动元素盒模型（box-model）。
 4. 严格控制你的规则，避免预期外的差异。
 5. 把它作为一个锦上添花的功能来向上促销（up-sell）。
@@ -20,7 +20,7 @@
 
 > Overriding default style with additional CSS.
 
-这应该是实现主题功能的一种最常用的手段了。首先，我们的站点会有一个最初的`基础样式`（或者叫默认样式）；然后通过添加一些后续的额外的CSS来`覆盖`与重新定义部分样式。
+这应该是实现主题功能的一种最常用的手段了。首先，我们的站点会有一个最初的`基础样式`（或者叫默认样式）；然后通过添加一些后续的额外的 CSS 来`覆盖`与重新定义部分样式。
 
 #### 具体实现
 
@@ -28,16 +28,16 @@
 
 ```css
 @import "components.tabs";
-@import "components.buttons"
+@import "components.buttons";
 ```
 
 其中 `components.tabs` 文件内容如下:
 
 ```css
 .tab {
-    margin: 0;
-    padding: 0;
-    background-color: gray;
+  margin: 0;
+  padding: 0;
+  background-color: gray;
 }
 ```
 
@@ -45,7 +45,7 @@
 
 ```css
 .tab {
-    background-color: red;
+  background-color: red;
 }
 ```
 
@@ -62,10 +62,10 @@
 
 ```css
 .tab {
-    margin: 0;
-    padding: 0;
-    /* background-color: gray; */
-    background-color: red;
+  margin: 0;
+  padding: 0;
+  /* background-color: gray; */
+  background-color: red;
 }
 ```
 
@@ -77,7 +77,7 @@
 #### 缺点
 
 - 过多的冗余代码
-- 许多的CSS其实是无用的，浪费了带宽
+- 许多的 CSS 其实是无用的，浪费了带宽
 - 把样式文件切分到许多文件中，更加琐碎
 
 ### 方式二：Stateful Theming
@@ -92,15 +92,15 @@
 
 ```css
 .tab {
-    background-color: gray;
+  background-color: gray;
 
-    .t-red & {
-        background-color: red;
-    }
-    
-    .t-blue & {
-        background-color: blue;
-    }
+  .t-red & {
+    background-color: red;
+  }
+
+  .t-blue & {
+    background-color: blue;
+  }
 }
 ```
 
@@ -110,7 +110,9 @@
 
 ```html
 <body class="t-red">
-    <ul class="tabs">...</ul>
+  <ul class="tabs">
+    ...
+  </ul>
 </body>
 ```
 
@@ -120,13 +122,13 @@
 
 ```css
 .u-color-current {
-    .t-red & {
-        color: red;
-    }
-    
-    .t-blue & {
-        color: blue;
-    }
+  .t-red & {
+    color: red;
+  }
+
+  .t-blue & {
+    color: blue;
+  }
 }
 ```
 
@@ -134,7 +136,7 @@
 
 ```html
 <body class="t-red">
-    <h1 class="page-title u-color-current">...</h1>
+  <h1 class="page-title u-color-current">...</h1>
 </body>
 ```
 
@@ -148,6 +150,7 @@
 - 可以实现将主题应用于所有元素
 
 #### 缺点
+
 - 有时有点也是缺点，将许多主题混杂在了同一块代码中
 - 可能会存在冗余
 
@@ -171,14 +174,14 @@ $theme: red;
 
 ```css
 .tab {
-    margin: 0;
-    padding: 0;
-    
-    @if ($theme == red) {
-        background-color: red;
-    } @else {
-        background-color: gray;
-    }
+  margin: 0;
+  padding: 0;
+
+  @if ($theme == red) {
+    background-color: red;
+  } @else {
+    background-color: gray;
+  }
 }
 ```
 
@@ -197,11 +200,10 @@ Tab 组件就会呈现出红色主题。
 $config: (
     theme: red,
     env: dev,
-)
-
-// 从$config中获取相应的配置变量
-@function config($key) {
-    @return map-get($config, $key);
+  )
+  // 从$config中获取相应的配置变量
+  @function config($key) {
+  @return map-get($config, $key);
 }
 ```
 
@@ -209,14 +211,14 @@ $config: (
 
 ```css
 .tab {
-    margin: 0;
-    padding: 0;
-    
-    @if (config(theme) == red) {
-        background-color: red;
-    } @else {
-        background-color: gray;
-    }
+  margin: 0;
+  padding: 0;
+
+  @if (config(theme) == red) {
+    background-color: red;
+  } @else {
+    background-color: gray;
+  }
 }
 ```
 
@@ -258,9 +260,9 @@ $color-tabs-background: $color-red;
 
 ```css
 .tabs {
-    margin: 0;
-    padding: 0;
-    backgroung-color: $color-tabs-background;
+  margin: 0;
+  padding: 0;
+  backgroung-color: $color-tabs-background;
 }
 ```
 
@@ -298,7 +300,9 @@ $color-tabs-background: $color-red;
 首先，页面中支持自定义的元素会被预先添加 `util class`，例如 Tab 元素中的`u-user-color-background`
 
 ```html
-<ul class="tabs u-user-color-background">...</ul>
+<ul class="tabs u-user-color-background">
+  ...
+</ul>
 ```
 
 此时，`u-user-color-background`还并未定义任何样式。而当用户输入了一个背景色时，我们会创建一个`<style>`标签，并将 hex 值注入其中
@@ -306,7 +310,7 @@ $color-tabs-background: $color-red;
 ```html
 <style id="my-custom">
   .u-user-color-background {
-      background-color: #00ffff;
+    background-color: #00ffff;
   }
 </style>
 ```
@@ -330,11 +334,11 @@ Twitter 就是使用这种方式来实现用户定制化的界面样式的：
 - 会浪费 CSS 的带宽
 - 失去部分 CSS 的浏览器缓存能力
 
-### 方式六：CSS自定义属性(变量)
+### 方式六：CSS 自定义属性(变量)
 
-CSS变量通常用于存储颜色，字体名称，字体大小，长度单位等。然后可以在样式表中的多个位置引用和重用它们。大多数开发人员都会引用"`CSS变量`"，但官方名称是"`自定义属性`"。
+CSS 变量通常用于存储颜色，字体名称，字体大小，长度单位等。然后可以在样式表中的多个位置引用和重用它们。大多数开发人员都会引用"`CSS变量`"，但官方名称是"`自定义属性`"。
 
-CSS自定义属性可以修改可在`整个样式表`中引用的变量。以前，只有使用Sass等CSS预处理器才能实现这一点。
+CSS 自定义属性可以修改可在`整个样式表`中引用的变量。以前，只有使用 Sass 等 CSS 预处理器才能实现这一点。
 
 `自定义属性`是一个名称以两个连字符（ - ）开头的属性，如 `--foo`。定义后可以使用 `var()` 引用变量。 让我们考虑这个例子：
 
@@ -345,7 +349,7 @@ CSS自定义属性可以修改可在`整个样式表`中引用的变量。以前
 }
 ```
 
-在`:root`选择器中定义自定义属性意味着它们可以作用于`全局文档中所有元素`。`:root`是一个CSS伪类，它匹配文档的根元素 – `<html>`元素。它类似于 html 选择器，但具有更高的优先级。
+在`:root`选择器中定义自定义属性意味着它们可以作用于`全局文档中所有元素`。`:root`是一个 CSS 伪类，它匹配文档的根元素 – `<html>`元素。它类似于 html 选择器，但具有更高的优先级。
 
 您可以在文档中的任何位置访问 `:root` 中的自定义属性的值：
 
@@ -356,7 +360,7 @@ div {
 }
 ```
 
-您还可以在CSS变量中包含回退值。例如：
+您还可以在 CSS 变量中包含回退值。例如：
 
 ```css
 div {
@@ -367,7 +371,7 @@ div {
 
 如果未定义自定义属性，则使用其回退值代替。
 
-除了 `:root` 或 `html` 选择器之外的CSS选择器内定义的自定义属性使变量可用于匹配元素及其子元素。
+除了 `:root` 或 `html` 选择器之外的 CSS 选择器内定义的自定义属性使变量可用于匹配元素及其子元素。
 
 #### 具体实现
 
@@ -378,8 +382,8 @@ div {
   --bg-color: #fff;
 }
 
-:root[theme='dark'] {
-  --bg-color: #ccc
+:root[theme="dark"] {
+  --bg-color: #ccc;
 }
 
 .bg {
@@ -400,126 +404,131 @@ html:
 
 ```javascript
 const toggleBtn = document.querySelector("#toggle-theme");
-toggleBtn.addEventListener('click', e => {
-  if(document.documentElement.hasAttribute('theme')){
-    document.documentElement.removeAttribute('theme');
+toggleBtn.addEventListener("click", (e) => {
+  if (document.documentElement.hasAttribute("theme")) {
+    document.documentElement.removeAttribute("theme");
   } else {
-    document.documentElement.setAttribute('theme', 'dark');
+    document.documentElement.setAttribute("theme", "dark");
   }
 });
+
+// 另一种方式是直接修改主题变量
+document.body.style.setProperty(`--bg-color`, "#ccc");
 ```
 
 #### 优点
 
 - 可以在单独位置定义值。
 - 可以适当地命名该值以帮助维护和可读性。
-- 可以使用JavaScript动态更改该值。
+- 可以使用 JavaScript 动态更改该值。
 
 #### 缺点
 
-- 兼容性较差, 不支持ie
+- 兼容性较差, 不支持 ie
 
-### element ui的动态换肤
+### element ui 的动态换肤
 
 #### 具体实现
 
-生成一套主题， 将主题配色配置写在js中，在浏览器中用js动态修改style标签覆盖原有的CSS。
+生成一套主题， 将主题配色配置写在 js 中，在浏览器中用 js 动态修改 style 标签覆盖原有的 CSS。
 
-1. 准备一套默认theme.css样式
+1. 准备一套默认 theme.css 样式
 
 ```css
 /* theme.css */
 .title {
-  color: #FF0000
+  color: #ff0000;
 }
 ```
 
 2. 准备主题色配置
+
 ```javascript
 var colors = {
-    red: {
-        themeColor: '#FF0000'
-    },
-    blue: {
-        themeColor: '#0000FF'
-    }
-}
+  red: {
+    themeColor: "#FF0000",
+  },
+  blue: {
+    themeColor: "#0000FF",
+  },
+};
 ```
 
 3. 异步获取 theme.css ，将颜色值替换为关键词. 关键字可以确保以后能多次换色
 
 ```javascript
-var styles = ''
-axios.get('theme.css').then((resp=> {
- const colorMap = {
-   '#FF0000': 'themeColor'
- }
- styles = resp.data
- Object.keys(colorMap).forEach(key => {
-   const value = colorMap[key]
-   styles = styles.replace(new RegExp(key, 'ig'), value)
- })
-}))
+var styles = "";
+axios.get("theme.css").then((resp) => {
+  const colorMap = {
+    "#FF0000": "themeColor",
+  };
+  styles = resp.data;
+  Object.keys(colorMap).forEach((key) => {
+    const value = colorMap[key];
+    styles = styles.replace(new RegExp(key, "ig"), value);
+  });
+});
 ```
 
 style 变为：
 
 ```css
 .title {
-  color: theme-color
+  color: theme-color;
 }
 ```
 
 4. 把关键词再换回刚刚生成的相应的颜色值，并在页面上添加 style 标签
 
 ```javascript
- // console 中执行 writeNewStyle (styles, colors.blue)  即可变色
- function writeNewStyle (originalStyle, colors) {
-    let oldEl = document.getElementById('temp-style')
-    let cssText = originalStyle
-    // 替换颜色值
-    Object.keys(colors).forEach(key => {
-    cssText = cssText.replace(new RegExp(key, 'ig'), colors[key])
-    })
-    const style = document.createElement('style')
-    style.innerText = cssText
-    style.id = 'temp-style'
+// console 中执行 writeNewStyle (styles, colors.blue)  即可变色
+function writeNewStyle(originalStyle, colors) {
+  let oldEl = document.getElementById("temp-style");
+  let cssText = originalStyle;
+  // 替换颜色值
+  Object.keys(colors).forEach((key) => {
+    cssText = cssText.replace(new RegExp(key, "ig"), colors[key]);
+  });
+  const style = document.createElement("style");
+  style.innerText = cssText;
+  style.id = "temp-style";
 
-    oldEl ? document.head.replaceChild(style, oldEl) : 
-    document.head.appendChild(style)  // 将style写入页面
+  oldEl
+    ? document.head.replaceChild(style, oldEl)
+    : document.head.appendChild(style); // 将style写入页面
 }
 ```
 
-此时style 变为：
+此时 style 变为：
 
 ```css
 .title {
-  color: '#0000FF'
+  color: "#0000FF";
 }
 ```
 
 #### 优点
 
-- 只需一套CSS文件
+- 只需一套 CSS 文件
 - 换肤不需要延迟等候
 - 可自动适配多种主题色
 
 #### 缺点
 
 - 稍难理解
-- 需准确的css颜色值
+- 需准确的 css 颜色值
 - 可能受限于浏览器性能
 
 ### 主题样式切换
 
-#### 替换css
+#### 替换 css
 
-先将默认主题写到页面中, 通过js触发事件加载其他主题的css。后加载的css会覆盖之前样式从而达到切换主题的效果。
+先将默认主题写到页面中, 通过 js 触发事件加载其他主题的 css。后加载的 css 会覆盖之前样式从而达到切换主题的效果。
 
 举个栗子, 默认主题是亮色主题:
 
 ```html
-<link rel="stylesheet" type="text/css" href="/css/nutzbs_light.css">
+<link rel="stylesheet" type="text/css" href="/css/nutzbs_light.css" />
 ```
 
 实现添加/删除暗色主题:
@@ -527,16 +536,16 @@ style 变为：
 ```javascript
 // 添加暗色主题
 function addDarkTheme() {
-   var link = document.createElement('link');
-   link.type = 'text/css';
-   link.id = "theme-css-dark";  // 加上id方便后面好查找到进行删除
-   link.rel = 'stylesheet';
-   link.href = '/css/nutzbs_dark.css';
-   document.getElementsByTagName("head")[0].appendChild(link);
+  var link = document.createElement("link");
+  link.type = "text/css";
+  link.id = "theme-css-dark"; // 加上id方便后面好查找到进行删除
+  link.rel = "stylesheet";
+  link.href = "/css/nutzbs_dark.css";
+  document.getElementsByTagName("head")[0].appendChild(link);
 }
 // 删除暗色主题
 function removeDarkTheme() {
-   $('#theme-css-dark').remove();
+  $("#theme-css-dark").remove();
 }
 ```
 
@@ -545,30 +554,30 @@ function removeDarkTheme() {
 ```javascript
 // 使用暗色主题
 function useDarkTheme(useDark) {
-   if (useDark) {
-       addDarkTheme();
-   } else {
-       removeDarkTheme();
-   }
+  if (useDark) {
+    addDarkTheme();
+  } else {
+    removeDarkTheme();
+  }
 }
 ```
 
-直接通过加载css切换主题后可能会面临一个问题: 切换到其他页面后又变成了默认主题，所以需要`保持`当前选中的主题. 可以采用`localStorage`, `cookie`等方式进行记录. 下面采用cookie的方式:
+直接通过加载 css 切换主题后可能会面临一个问题: 切换到其他页面后又变成了默认主题，所以需要`保持`当前选中的主题. 可以采用`localStorage`, `cookie`等方式进行记录. 下面采用 cookie 的方式:
 
 ```javascript
 // 获取cookie中选中的主题名称，没有就给个默认的
 function getThemeCSSName() {
-   return Cookies.get('nutzam-theme') || "light";
+  return Cookies.get("nutzam-theme") || "light";
 }
 
 // 使用暗色主题(记录选择到cookie中)
 function useDarkTheme(useDark) {
-   Cookies.set('nutzam-theme', useDark ? "dark" : "light");
-   if (useDark) {
-       addDarkTheme();
-   } else {
-       removeDarkTheme();
-   }
+  Cookies.set("nutzam-theme", useDark ? "dark" : "light");
+  if (useDark) {
+    addDarkTheme();
+  } else {
+    removeDarkTheme();
+  }
 }
 ```
 
@@ -576,15 +585,15 @@ function useDarkTheme(useDark) {
 
 ```javascript
 $(document).ready(function () {
-    useDarkTheme(getThemeCSSName() == 'dark');
-})
+  useDarkTheme(getThemeCSSName() == "dark");
+});
 ```
 
-#### 插入style
+#### 插入 style
 
 如方式五
 
-#### 修改var变量
+#### 修改 var 变量
 
 如方式六
 
@@ -594,25 +603,25 @@ $(document).ready(function () {
 
 这里有一个不是非常严谨的方式可以参考。你可以通过尝试问自己下面这几个问题来做出决定：
 
-- 是你还是用户谁来确定样式？用户：选择【方式五】User Customisation 或【方式六】CSS变量
+- 是你还是用户谁来确定样式？用户：选择【方式五】User Customisation 或【方式六】CSS 变量
 
-- 主题是否会在客户端中被切换？是：选择【方式二】Stateful Theming 或【方式五】User Customisation 或【方式六】CSS变量
+- 主题是否会在客户端中被切换？是：选择【方式二】Stateful Theming 或【方式五】User Customisation 或【方式六】CSS 变量
 
-- 是否有主题能让用户切换？是：选择【方式二】Stateful Theming或【方式六】CSS变量
+- 是否有主题能让用户切换？是：选择【方式二】Stateful Theming 或【方式六】CSS 变量
 
 - 你是希望网站的某些部分需要有不同么？是：选择【方式二】Stateful Theming
 
-- 是否有预设的主题让客户端来选择？是：选择【方式三】Config Theming 或【方式六】CSS变量
+- 是否有预设的主题让客户端来选择？是：选择【方式三】Config Theming 或【方式六】CSS 变量
 
 - 是否是类似“贴牌”这类场景？是：选择【方式一】Theme Layer 或【方式四】Theme Palettes
 
 参考资料:
 
-[(S)CSS中实现主题样式的4½种方式 [译]](https://juejin.cn/post/6844903735605329934)
+[(S)CSS 中实现主题样式的 4½ 种方式 [译]](https://juejin.cn/post/6844903735605329934)
 
-[web网页中主题切换的实现思路](https://www.jianshu.com/p/fe807f5ef394)
+[web 网页中主题切换的实现思路](https://www.jianshu.com/p/fe807f5ef394)
 
-[CSS自定义属性怎样实现主题切换？](https://zhuanlan.zhihu.com/p/60975003)
+[CSS 自定义属性怎样实现主题切换？](https://zhuanlan.zhihu.com/p/60975003)
 
 [如何简单实现 CSS 主题的切换](https://blog.p2hp.com/archives/7293)
 
